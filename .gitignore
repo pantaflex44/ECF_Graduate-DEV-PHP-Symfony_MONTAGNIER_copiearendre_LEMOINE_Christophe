@@ -1,2 +1,4 @@
 .env
 tools
+.vscode
+api/vendor
