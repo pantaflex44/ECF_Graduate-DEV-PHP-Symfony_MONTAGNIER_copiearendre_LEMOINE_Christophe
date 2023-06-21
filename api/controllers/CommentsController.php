@@ -23,7 +23,10 @@ class CommentsController
      */
     public function list(Request $request, Response $response): Response
     {
-        \App\Libs\SlimEx::onlyAdminAndWorkers($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin' && $user?->role !== 'worker') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $response->getBody()->write(json_encode(Comments::list($request)));
@@ -124,7 +127,10 @@ class CommentsController
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
-        \App\Libs\SlimEx::onlyAdminAndWorkers($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin' && $user?->role !== 'worker') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();

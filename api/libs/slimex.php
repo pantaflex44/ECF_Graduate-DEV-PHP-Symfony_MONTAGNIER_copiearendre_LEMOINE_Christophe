@@ -127,6 +127,21 @@ class SlimEx
     }
 
     /**
+     * Cette fonction vérifie si l'utilisateur est connecté et renvoie un message d'erreur s'il ne l'est pas.
+     * 
+     * @param Request request  est un objet de la classe Request dans le framework Slim. Il représente une requête HTTP qui a été reçue par l'application et contient des informations sur la requête telles que la méthode HTTP, les en-têtes et le corps.
+     * 
+     * @return Si l'attribut `` est `false`, la fonction renverra un message d'erreur avec un code d'état 403 indiquant que l'utilisateur doit être connecté pour effectuer l'opération demandée. Si l'attribut `` est `true`, rien ne sera retourné.
+     */
+    public static function onlyConnected(Request $request)
+    {
+        $is_connected = $request->getAttribute('is_connected');
+        if (!$is_connected) {
+            return SlimEx::sendError(403, "Vous devez être connecté pour effectuer cette opération.");
+        }
+    }
+
+    /**
      * Cette fonction PHP vérifie si l'utilisateur qui fait la demande est un administrateur et renvoie un message d'erreur si ce n'est pas le cas.
      *
      * @param Request request  est un objet de la classe Request qui contient les informations de la requête HTTP telles que les en-têtes, les paramètres et le corps.

@@ -34,10 +34,8 @@ $errorHandler = $errorMiddleware->getDefaultErrorHandler();
 $errorHandler->forceContentType('application/json');
 
 /* Ces lignes de code ajoutent des middlewares personnalisés de manière globale à l'application. Le tableau contient les noms des middlewares à ajouter. */
-$globalMiddlewares = ['DebugMiddleware', 'DbMiddleware'];
-foreach ($globalMiddlewares as $globalMiddleware) {
-    $app->add(sprintf('App\Middlewares\%s', $globalMiddleware));
-}
+$app->add(new \App\Middlewares\DebugMiddleware());
+$app->add(new \App\Middlewares\DbMiddleware());
 
 /* Ce code configure une route pour la méthode GET au point de terminaison `/api`. Lorsqu'une requête GET est envoyée à ce point de terminaison, la fonction transmise en deuxième argument est exécutée. Cette fonction prend un objet `Request` et un objet `Response` comme arguments. Il écrit une chaîne dans le corps de la réponse et renvoie l'objet de réponse. La chaîne écrite dans le corps de la réponse est un message indiquant la version et la paternité de l'API Garage V. Parrot. */
 $app->get('/api', function (Request $request, Response $response) {
@@ -48,32 +46,32 @@ $app->get('/api', function (Request $request, Response $response) {
 /* Ce code définit un tableau qui contient des informations sur les différentes routes que l'application va gérer. Chaque élément du tableau représente une route et contient la méthode HTTP, le chemin du point de terminaison, la méthode du contrôleur qui gérera la requête et tous les middlewares qui doivent être appliqués à la route. */
 $routes = [
     ['method' => 'post',    'path' => 'login',                              'controller' => 'AuthController:login',                 'middlewares' => []],
-    ['method' => 'get',     'path' => 'refresh',                            'controller' => 'AuthController:refresh',               'middlewares' => ['AuthMiddleware']],
-    ['method' => 'get',     'path' => 'logout',                             'controller' => 'AuthController:logout',                'middlewares' => ['AuthMiddleware']],
+    ['method' => 'get',     'path' => 'refresh',                            'controller' => 'AuthController:refresh',               'middlewares' => []],
+    ['method' => 'get',     'path' => 'logout',                             'controller' => 'AuthController:logout',                'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'users',                              'controller' => 'UsersController:list',                 'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'user_exists',                        'controller' => 'UsersController:exists',               'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'add_user',                           'controller' => 'UsersController:add',                  'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'update_user/{id:\d+}',               'controller' => 'UsersController:update',               'middlewares' => ['AuthMiddleware']],
-    ['method' => 'delete',  'path' => 'delete_user/{id:\d+}',               'controller' => 'UsersController:delete',               'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'activate_user/{id:\d+}',             'controller' => 'UsersController:activate',             'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'change_user_password/{id:\d+}',      'controller' => 'UsersController:password',             'middlewares' => ['AuthMiddleware']],
-    ['method' => 'get',     'path' => 'reset_user_password/{id:\d+}',       'controller' => 'UsersController:reset',                'middlewares' => ['AuthMiddleware']],
+    ['method' => 'get',     'path' => 'users',                              'controller' => 'UsersController:list',                 'middlewares' => []],
+    ['method' => 'post',    'path' => 'user_exists',                        'controller' => 'UsersController:exists',               'middlewares' => []],
+    ['method' => 'post',    'path' => 'add_user',                           'controller' => 'UsersController:add',                  'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_user/{id:\d+}',               'controller' => 'UsersController:update',               'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_user/{id:\d+}',               'controller' => 'UsersController:delete',               'middlewares' => []],
+    ['method' => 'post',    'path' => 'activate_user/{id:\d+}',             'controller' => 'UsersController:activate',             'middlewares' => []],
+    ['method' => 'post',    'path' => 'change_user_password/{id:\d+}',      'controller' => 'UsersController:password',             'middlewares' => []],
+    ['method' => 'get',     'path' => 'reset_user_password/{id:\d+}',       'controller' => 'UsersController:reset',                'middlewares' => []],
 
     ['method' => 'get',     'path' => 'services',                           'controller' => 'ServicesController:list',              'middlewares' => []],
-    ['method' => 'post',    'path' => 'add_service',                        'controller' => 'ServicesController:add',               'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'update_service/{id:\d+}',            'controller' => 'ServicesController:update',            'middlewares' => ['AuthMiddleware']],
-    ['method' => 'delete',  'path' => 'delete_service/{id:\d+}',            'controller' => 'ServicesController:delete',            'middlewares' => ['AuthMiddleware']],
+    ['method' => 'post',    'path' => 'add_service',                        'controller' => 'ServicesController:add',               'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_service/{id:\d+}',            'controller' => 'ServicesController:update',            'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_service/{id:\d+}',            'controller' => 'ServicesController:delete',            'middlewares' => []],
 
     ['method' => 'get',     'path' => 'openings',                           'controller' => 'OpeningHoursController:list',          'middlewares' => []],
-    ['method' => 'post',    'path' => 'add_period',                         'controller' => 'OpeningHoursController:add',           'middlewares' => ['AuthMiddleware']],
-    ['method' => 'post',    'path' => 'update_period/{id:\d+}',             'controller' => 'OpeningHoursController:update',        'middlewares' => ['AuthMiddleware']],
-    ['method' => 'delete',  'path' => 'delete_period/{id:\d+}',             'controller' => 'OpeningHoursController:delete',        'middlewares' => ['AuthMiddleware']],
+    ['method' => 'post',    'path' => 'add_period',                         'controller' => 'OpeningHoursController:add',           'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_period/{id:\d+}',             'controller' => 'OpeningHoursController:update',        'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_period/{id:\d+}',             'controller' => 'OpeningHoursController:delete',        'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'comments',                           'controller' => 'CommentsController:list',              'middlewares' => ['AuthMiddleware']],
+    ['method' => 'get',     'path' => 'comments',                           'controller' => 'CommentsController:list',              'middlewares' => []],
     ['method' => 'get',     'path' => 'approved_comments',                  'controller' => 'CommentsController:approved_list',     'middlewares' => []],
     ['method' => 'post',    'path' => 'add_comment',                        'controller' => 'CommentsController:add',               'middlewares' => []],
-    ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',            'controller' => 'CommentsController:delete',            'middlewares' => ['AuthMiddleware']],
+    ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',            'controller' => 'CommentsController:delete',            'middlewares' => []],
 ];
 foreach ($routes as $route) {
     $r = $app->map(
@@ -81,7 +79,8 @@ foreach ($routes as $route) {
         sprintf('/api/%s', $route['path']),
         sprintf('App\Controllers\%s', $route['controller'])
     );
-    foreach ($route['middlewares'] as $middleware) {
+    $m = array_merge($route['middlewares'], ['AuthMiddleware']);
+    foreach ($m as $middleware) {
         $r = $r->add(sprintf('App\Middlewares\%s', $middleware));
     }
 }

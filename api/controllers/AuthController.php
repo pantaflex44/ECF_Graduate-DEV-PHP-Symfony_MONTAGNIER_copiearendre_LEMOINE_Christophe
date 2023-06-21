@@ -55,6 +55,9 @@ class AuthController
     public function refresh(Request $request, Response $response): Response
     {
         $user = $request->getAttribute('user');
+        if (is_null($user)) {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         $new_user_token = \App\Libs\createUniqToken();
         $user->setToken($new_user_token);
@@ -78,6 +81,10 @@ class AuthController
     public function logout(Request $request, Response $response): Response
     {
         $user = $request->getAttribute('user');
+        if (is_null($user)) {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
+        
         $logedout = $user->setToken('');
 
         return $response->withStatus($logedout ? 200 : 500);

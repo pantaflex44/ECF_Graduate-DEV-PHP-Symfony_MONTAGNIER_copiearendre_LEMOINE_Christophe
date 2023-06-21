@@ -21,7 +21,10 @@ class UsersController
      */
     public function add(Request $request, Response $response): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();
@@ -69,7 +72,10 @@ class UsersController
      */
     public function update(Request $request, Response $response, array $args): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();
@@ -114,7 +120,10 @@ class UsersController
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();
@@ -146,7 +155,10 @@ class UsersController
      */
     public function activate(Request $request, Response $response, array $args): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();
@@ -182,7 +194,10 @@ class UsersController
      */
     public function exists(Request $request, Response $response): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();
@@ -214,7 +229,10 @@ class UsersController
      */
     public function list(Request $request, Response $response): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $response->getBody()->write(json_encode(User::list($request)));
@@ -239,7 +257,10 @@ class UsersController
      */
     public function password(Request $request, Response $response, array $args): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();
@@ -278,7 +299,10 @@ class UsersController
      */
     public function reset(Request $request, Response $response, array $args): Response
     {
-        \App\Libs\SlimEx::onlyAdmin($request);
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin') {
+            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
 
         try {
             $data = $request->getParsedBody();

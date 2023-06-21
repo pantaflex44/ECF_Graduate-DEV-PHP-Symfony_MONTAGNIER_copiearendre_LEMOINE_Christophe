@@ -23,33 +23,33 @@ class AuthMiddleware
      */
     public function __invoke(Request $request, RequestHandler $handler)
     {
+        $user = null;
+
         try {
             $authorization = trim(substr(getallheaders()['authorization'] ?? '', 7));
-            $decoded = JWT::decode($authorization, new Key($_ENV['JWT_SECRET'], $_ENV['JWT_ALGO']));
 
-            if ($decoded->iss !== "GVP") {
+            $decoded = JWT::decode($authorization, new Key($_ENV['JWT_SECRET'], $_ENV['JWT_ALGO']));
+            if ($decoded->iss === "GVP") {
+                $user = User::byTokenId($request, $decoded->uid, $decoded->tkn);
+            }
+
+            /*if ($decoded->iss !== "GVP") {
                 throw new \Exception('Bad owner');
             }
 
             $user = User::byTokenId($request, $decoded->uid, $decoded->tkn);
             if (is_null($user)) {
                 throw new \Exception('Bad credentials');
-            }
-
-            return $handler->handle($request->withAttribute('user', $user));
+            }*/
         } catch (ExpiredException $ex) {
             return \App\Libs\SlimEx::sendError(
                 410,
                 "La connexion a expirée",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
             );
-        } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
-                401,
-                "Erreur de connexion",
-                $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
-            );
-        }
+        } catch (\Exception $ex) {}
+        
+        return $handler->handle($request->withAttribute('user', $user));
     }
 
 }
