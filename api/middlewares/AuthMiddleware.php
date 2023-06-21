@@ -32,15 +32,6 @@ class AuthMiddleware
             if ($decoded->iss === "GVP") {
                 $user = User::byTokenId($request, $decoded->uid, $decoded->tkn);
             }
-
-            /*if ($decoded->iss !== "GVP") {
-                throw new \Exception('Bad owner');
-            }
-
-            $user = User::byTokenId($request, $decoded->uid, $decoded->tkn);
-            if (is_null($user)) {
-                throw new \Exception('Bad credentials');
-            }*/
         } catch (ExpiredException $ex) {
             return \App\Libs\SlimEx::sendError(
                 410,

@@ -79,7 +79,7 @@ foreach ($routes as $route) {
         sprintf('/api/%s', $route['path']),
         sprintf('App\Controllers\%s', $route['controller'])
     );
-    $m = array_merge($route['middlewares'], ['AuthMiddleware']);
+    $m = array_merge(['AuthMiddleware'], $route['middlewares']);
     foreach ($m as $middleware) {
         $r = $r->add(sprintf('App\Middlewares\%s', $middleware));
     }
