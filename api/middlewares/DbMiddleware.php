@@ -39,7 +39,7 @@ class DbMiddleware
             $stmt = $pdo->query(sprintf("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';", $_ENV['MYSQL_BASE']));
             $exists = (bool)$stmt->fetchColumn();
             if (!$exists) {
-                $pdo->exec(sprintf("CREATE DATABASE IF NOT EXISTS %s;", $_ENV['MYSQL_BASE']));
+                $pdo->exec(sprintf("CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;", $_ENV['MYSQL_BASE']));
             }
 
             // use the database
@@ -56,6 +56,7 @@ class DbMiddleware
 
             return $handler->handle($request->withAttribute('db', $pdo));
         } catch (Exception $ex) {
+            var_dump($ex);
             return \App\Libs\SlimEx::sendError(
                 500,
                 "Erreur critique relative au serveur de données",

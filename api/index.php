@@ -72,6 +72,10 @@ $routes = [
     ['method' => 'get',     'path' => 'approved_comments',                  'controller' => 'CommentsController:approved_list',     'middlewares' => []],
     ['method' => 'post',    'path' => 'add_comment',                        'controller' => 'CommentsController:add',               'middlewares' => []],
     ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',            'controller' => 'CommentsController:delete',            'middlewares' => []],
+
+    ['method' => 'post',    'path' => 'offers[/{page}[/{per_page}]]',       'controller' => 'OffersController:list',                'middlewares' => []],
+    ['method' => 'get',     'path' => 'filters_limits',                     'controller' => 'OffersController:filters_limits',      'middlewares' => []],
+    ['method' => 'get',     'path' => 'filters_limits_form',                'controller' => 'OffersController:filters_limits_form', 'middlewares' => []],
 ];
 foreach ($routes as $route) {
     $r = $app->map(

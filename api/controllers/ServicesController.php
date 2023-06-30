@@ -124,7 +124,7 @@ class ServicesController
                 return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'description']);
             }
 
-            $uploadedFile = \App\Libs\SlimEx::imageValidator($uploadedFiles['image']);
+            $uploadedFile = \App\Libs\SlimEx::imageValidator($uploadedFiles['image'], 40960);
             if ($uploadedFile['success'] !== true) {
                 return \App\Libs\SlimEx::sendError(400, $uploadedFile['data'], ['field' => 'image']);
             }

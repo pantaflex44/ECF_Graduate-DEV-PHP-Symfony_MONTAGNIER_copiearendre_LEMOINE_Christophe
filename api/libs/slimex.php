@@ -104,26 +104,28 @@ class SlimEx
      * Cette fonction valide un fichier image téléchargé en vérifiant son extension, sa taille et en le convertissant en un URI de données.
      * 
      * @param UploadedFile uploadedFile Une instance de la classe UploadedFile représentant le fichier image téléchargé.
+     * @param int max_allowed_size Taille maximale en octets de l'image téléchargée.
      * 
      * @return array un tableau à deux éléments. Le premier élément est une valeur booléenne indiquant si l'image téléchargée est valide ou non. Le deuxième élément est un message de chaîne fournissant plus d'informations sur le résultat de la validation. Si l'image est valide, le message contiendra un URI de données représentant l'image.
      */
-    public static function imageValidator(?UploadedFile $uploadedFile): array
+    public static function imageValidator(?UploadedFile $uploaded_file, int $max_allowed_size = 1024000): array
     {
-        if (is_null($uploadedFile)) return ['success' => false, 'data' => "Image manquante."];
-        if ($uploadedFile->getError() !== UPLOAD_ERR_OK) return ['success' => false, 'data' => "Image incorrecte."];
+        if (is_null($uploaded_file)) return ['success' => false, 'data' => "Image manquante."];
+        if ($uploaded_file->getError() !== UPLOAD_ERR_OK) return ['success' => false, 'data' => "Image incorrecte."];
 
-        $extension = strtolower(pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION));
-        $allowedExtensions = array_map(function ($v) {
+        $extension = strtolower(pathinfo($uploaded_file->getClientFilename(), PATHINFO_EXTENSION));
+        $allowed_extensions = array_map(function ($v) {
             return strtolower(trim($v));
         }, explode(',', $_ENV['ALLOWED_IMAGE_TYPES']));
-        if (!in_array($extension, $allowedExtensions)) return ['success' => false, 'data' => sprintf("Format de l'image incorrect (%s).", implode(', ', $allowedExtensions))];
+        if (!in_array($extension, $allowed_extensions)) return ['success' => false, 'data' => sprintf("Format de l'image incorrect (%s).", implode(', ', $allowed_extensions))];
 
-        $size = $uploadedFile->getSize();
-        $allowedSize = intval($_ENV['ALLOWED_IMAGE_MAX_SIZE']);
-        if ($size > $allowedSize) return ['success' => false, 'data' => sprintf("Taille de l'image incorrecte (max %s).", \App\Libs\SlimEx::human_filesize($allowedSize))];
+        $size = $uploaded_file->getSize();
+        $allowed_size = intval($_ENV['ALLOWED_IMAGE_MAX_SIZE']);
+        if ($max_allowed_size < $allowed_size) $allowed_size = $max_allowed_size;
+        if ($size > $allowed_size) return ['success' => false, 'data' => sprintf("Taille de l'image incorrecte (max %s).", \App\Libs\SlimEx::human_filesize($allowed_size))];
 
-        $dataUri = \App\Libs\SlimEx::imageToDataUri($uploadedFile->getFilePath(), $extension);
-        return ['success' => true, 'data' => $dataUri];
+        $data_uri = \App\Libs\SlimEx::imageToDataUri($uploaded_file->getFilePath(), $extension);
+        return ['success' => true, 'data' => $data_uri];
     }
 
     /**
@@ -272,5 +274,17 @@ class SlimEx
             $ip = $_SERVER['REMOTE_ADDR'];
         }
         return $ip;
+    }
+
+    /**
+     * La fonction "strip_accents" prend une chaîne en entrée et renvoie la même chaîne avec tous les caractères accentués remplacés par leurs homologues non accentués.
+     * 
+     * @param string text Le paramètre "texte" est une chaîne qui représente le texte d'entrée dont vous souhaitez supprimer les accents.
+     * 
+     * @return string une chaîne avec tous les caractères accentués remplacés par leurs homologues non accentués.
+     */
+    public static function strip_accents(string $text): string
+    {
+        return strtr($text, 'àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ', 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
     }
 }
