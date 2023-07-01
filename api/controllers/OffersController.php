@@ -54,8 +54,8 @@ class OffersController
     public function filters_limits(Request $request, Response $response): Response
     {
         try {
-            $filters = Offers::filters_limits($request);
-            $response->getBody()->write(json_encode($filters));
+            $limits = Offers::filters_limits($request);
+            $response->getBody()->write(json_encode($limits));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
             return \App\Libs\SlimEx::sendError(
@@ -66,26 +66,5 @@ class OffersController
         }
     }
 
-    /**
-     * La fonction `filters_limits_form` en PHP récupère les filtres et les limites d'un formulaire et les renvoie sous forme de réponse JSON.
-     * 
-     * @param Request request Le paramètre `` est une instance de la classe `Request`, qui représente une requête HTTP faite au serveur. Il contient des informations telles que la méthode de requête, les en-têtes, les paramètres de requête et le corps de la requête.
-     * @param Response response Le paramètre `` est une instance de la classe `Response`, qui représente la réponse HTTP qui sera renvoyée au client. Il est utilisé pour définir le corps de la réponse, les en-têtes et le code d'état.
-     * 
-     * @return Response un objet Réponse.
-     */
-    public function filters_limits_form(Request $request, Response $response): Response
-    {
-        try {
-            $filters = Offers::filters_limits_form($request);
-            $response->getBody()->write(json_encode($filters));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
-                400,
-                "Impossible de traiter la demande.",
-                $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
-            );
-        }
-    }
+
 }

@@ -33,20 +33,25 @@ class Offers
 
     /* Le code ci-dessus définit un tableau appelé `` en PHP. Ce tableau contient divers filtres et leurs fonctions de filtre et arguments correspondants. Chaque filtre est associé à une fonction de filtrage et à un tableau d'arguments. */
     public static array $all_filters_limits = [
-        'doors'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Nombre de portes"],
-        'color'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Couleur"],
-        'brand'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Marque"],
-        'type'              => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Type de carrosserie"],
-        'fuel'              => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Carburant"],
-        'model'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Modèle"],
-        'sites'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Nombre de places"],
-        'gearbox'           => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Boite de vitesse"],
+        'name'              => ['limits' => 'filters_limits_nothing', 'column' => null],
+        'description'       => ['limits' => 'filters_limits_nothing', 'column' => null],
 
-        'din'               => ['limits' => 'filters_limits_range', 'column' => 'informations', 'label' => "Puissance DIN"],
-        'fiscal'            => ['limits' => 'filters_limits_range', 'column' => 'informations', 'label' => "Puissance fiscale"],
-        'mileage'           => ['limits' => 'filters_limits_range', 'column' => null, 'label' => "Kilométrage"],
-        'price'             => ['limits' => 'filters_limits_range', 'column' => null, 'label' => "Prix"],
-        'release_date'      => ['limits' => 'filters_limits_range', 'column' => null, 'label' => "Date de mise en service"],
+        'doors'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'color'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'brand'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'type'              => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'fuel'              => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'model'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'sites'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'gearbox'           => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+
+        'din'               => ['limits' => 'filters_limits_range', 'column' => 'informations'],
+        'fiscal'            => ['limits' => 'filters_limits_range', 'column' => 'informations'],
+        'mileage'           => ['limits' => 'filters_limits_range', 'column' => null],
+        'price'             => ['limits' => 'filters_limits_range', 'column' => null],
+        'release_date'      => ['limits' => 'filters_limits_range', 'column' => null],
+
+        'equipments_list'   => ['limits' => 'filters_limits_array', 'column' => null],
     ];
 
     /**
@@ -280,31 +285,7 @@ class Offers
 
         $options = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?? [];
 
-        return ['key' => $key, 'options' => $options];
-    }
-
-    /**
-     * La fonction génère un élément de formulaire HTML pour un filtre à sélection multiple avec options.
-     * 
-     * @param string name Le paramètre name est une chaîne qui représente le nom du filtre. Il est utilisé pour générer les attributs HTML id et name pour l'élément input et l'élément datalist.
-     * @param array limits Le paramètre "limits" est un tableau qui contient les options du filtre. Il devrait avoir une clé appelée "options" qui contient un tableau de valeurs qui seront utilisées pour remplir la liste de données dans le formulaire.
-     * 
-     * @return array Un tableau est renvoyé avec trois paires clé-valeur. Les clés sont 'form_id', 'form_name' et 'form_html5'. Les valeurs pour 'form_id' et 'form_name' sont toutes deux "filter_", où  est le paramètre d'entrée. La valeur de 'form_html5' est le code HTML d'un élément de formulaire, qui comprend un champ de saisie et une donnée
-     */
-    public static function filters_form_multi(string $name, array $limits): array
-    {
-        $form = '';
-
-        if (array_key_exists('options', $limits)) {
-            $form .= '<input type="text" list="' . $name . '_list" name="filter_' . $name . '" id="filter_' . $name . '" />' . "\n";
-            $form .= '<datalist id="' . $name . '_list">' . "\n";
-            foreach ($limits['options'] as $option) {
-                $form .= '<option value="' . $option . '">' . $option . '</option>' . "\n";
-            }
-            $form .= '</datalist>';
-        }
-
-        return ['form_id' => "filter_$name", 'form_name' => "filter_$name", 'form_html5' => $form];
+        return ['key' =>$key, 'component' => 'choices', 'options' => $options];
     }
 
     /**
@@ -335,26 +316,55 @@ class Offers
             $max = floatval($row[0]['max']);
         }
 
-        return ['key' => $key, 'min' => $min, 'max' => $max];
+        return ['key' =>$key, 'component' => 'minmax_range', 'min' => $min, 'max' => $max];
     }
 
     /**
-     * La fonction génère un élément de formulaire HTML pour une entrée de plage avec des valeurs minimales et maximales spécifiées.
+     * La fonction `filters_limits_array` récupère une liste distincte de valeurs à partir d'une colonne spécifique dans une table de base de données et applique certaines transformations à chaque valeur avant de renvoyer la liste.
      * 
-     * @param string name Le paramètre name est une chaîne qui représente le nom du filtre de plage. Il est utilisé pour générer l'attribut de nom de l'élément HTML et pour créer des identifiants uniques pour l'élément de filtre.
-     * @param array limits Le paramètre `limits` est un tableau qui contient les valeurs minimales et maximales pour l'entrée de plage. Il doit avoir la structure suivante :
+     * @param Request request Le paramètre `` est une instance de la classe `Request`, qui est généralement utilisée pour gérer les requêtes HTTP dans une application Web. Il contient des informations sur la requête en cours, telles que la méthode de requête, les en-têtes et les paramètres de requête.
+     * @param string name Le paramètre name est une chaîne qui représente le nom du filtre ou de la limite. Il est utilisé pour construire la requête SQL et comme clé dans le tableau renvoyé.
+     * @param string column Le paramètre `` est un paramètre facultatif qui spécifie le nom de la colonne dans la table de la base de données. Si une valeur est fournie pour ``, elle sera utilisée pour construire la requête SQL en l'ajoutant au paramètre ``. Si `` est `null`, alors seul le `
      * 
-     * @return array Un tableau est renvoyé avec les clés et les valeurs suivantes :
+     * @return array Un tableau est renvoyé avec deux clés : 'key' et 'list'. La valeur de 'key' est la concaténation des variables  et  (si  n'est pas null), sinon c'est juste la valeur de . La valeur de 'list' est un tableau de valeurs distinctes obtenues à partir d'une requête de base de données. Ces valeurs sont traitées en appliquant une série de transformations
      */
-    public static function filters_form_range(string $name, array $limits): array
+    public static function filters_limits_array(Request $request, string $name, string|null $column = null): array
     {
-        $form = '';
+        $db = $request->getAttribute('db');
 
-        if (array_key_exists('min', $limits) && array_key_exists('max', $limits)) {
-            $form .= '<input type="range" name="filter_' . $name . '" id="filter_' . $name . '" min="' . $limits['min'] . '" max="' . $limits['max'] . '" />';
+        $c = !is_null($column) ? "$column->>'$.$name'" : $name;
+        $key = !is_null($column) ? $column . "_" . $name : $name;
+
+        $sql = "SELECT DISTINCT $c FROM gvp.offers";
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        $list = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?? [];
+        if (count($list) > 0) {
+            $list = array_map(function ($item) {
+                $item = strtolower(trim($item));
+                $item = Slimex::strip_accents($item);
+                $item = Slimex::alpha_numeric_only($item);
+                return $item;
+            }, json_decode($list[0]));
         }
 
-        return ['form_id' => "filter_$name", 'form_name' => "filter_$name", 'form_html5' => $form];
+        return ['key' =>$key, 'component' => 'text_with_autocomplete', 'list' => $list];
+    }
+
+    /**
+     * La fonction "filters_limits_nothing" prend une requête, un nom et une colonne facultative, et renvoie un tableau avec une clé basée sur la colonne et le nom.
+     * 
+     * @param Request request Le paramètre `` est une instance de la classe `Request`, qui représente une requête HTTP faite au serveur. Il contient des informations sur la demande telles que la méthode de demande, les en-têtes et les données de la demande.
+     * @param string name Le paramètre "name" est une chaîne qui représente le nom du filtre ou de la limite. Il est utilisé pour créer une clé unique pour le filtre ou la limite.
+     * @param string column Le paramètre "colonne" est un paramètre facultatif de type chaîne. Il peut s'agir d'une valeur de chaîne ou de null.
+     * 
+     * @return array Un tableau est renvoyé avec une seule paire clé-valeur. La clé est déterminée en concaténant les valeurs des variables `` et `` (si `` n'est pas nul), et la valeur est la chaîne concaténée.
+     */
+    public static function filters_limits_nothing(Request $request, string $name, string|null $column = null): array
+    {
+        $key = !is_null($column) ? $column . "_" . $name : $name;
+
+        return ['key' => $key, 'component' => 'text_free'];
     }
 
     /**
@@ -381,34 +391,4 @@ class Offers
         return $filters;
     }
 
-    /**
-     * La fonction "filters_limits_form" génère un tableau de filtres et leurs limites et formes correspondantes en fonction de la requête donnée.
-     * 
-     * @param Request request Le paramètre  est une instance de la classe Request, qui est généralement utilisée pour récupérer des informations à partir de la requête HTTP adressée au serveur. Il contient des données telles que la méthode de requête, les en-têtes, les paramètres de requête et les données de formulaire. Dans cette fonction, le paramètre  est utilisé pour le passer à
-     * 
-     * @return array un ensemble de filtres.
-     */
-    public static function filters_limits_form(Request $request): array
-    {
-        $filters = [];
-
-        foreach (Offers::$all_filters_limits as $name => $item) {
-            try {
-                $rm = new \ReflectionMethod(__CLASS__, $item['limits']);
-                if (!is_null($rm) && $rm->isStatic()) {
-                    $limits = call_user_func_array(__CLASS__ . "::" . $item['limits'], [$request, $name, $item['column']]);
-
-                    $frm_caller = str_replace('limits', 'form', $item['limits']);
-                    $rm = new \ReflectionMethod(__CLASS__, $frm_caller);
-                    if (!is_null($rm) && $rm->isStatic()) {
-                        $form = call_user_func_array(__CLASS__ . "::" . $frm_caller, [$name, $limits]);
-                        $filters[$name] = array_merge($limits, $form, ['form_label' => $item['label']]);
-                    }
-                }
-            } catch (Exception $ex) {
-            }
-        }
-
-        return $filters;
-    }
 }

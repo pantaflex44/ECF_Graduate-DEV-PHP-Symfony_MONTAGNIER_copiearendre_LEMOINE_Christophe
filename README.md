@@ -212,8 +212,8 @@ Les **''** entourant les données modifiables sont importantes. **Ne modifier qu
 
 **Backend (API)**
 - PHP 8.1
-- MySQL 8.0 / PDO
-- Slim 4
+- MySQL 8.0 (PDO)
+- Slim 4 (CORS, HTTPS, GZIP, JSON, JWT)
 
 **Frontend**
 - HTML 5
