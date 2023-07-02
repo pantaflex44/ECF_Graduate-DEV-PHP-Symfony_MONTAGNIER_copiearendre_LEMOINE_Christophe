@@ -23,6 +23,7 @@ class User
     {
         $user = new User($request);
         foreach($data as $k => $v) {
+            if ($k === 'password') continue;
             $user->{$k} = $v;
         }
         return $user;
@@ -153,8 +154,8 @@ class User
         $stmt = $db->prepare($sql);
         $stmt->execute();
 
-        $result = $stmt->fetchAll();
-        return $result ?? [];
+        $result = $stmt->fetchAll() ?? [];
+        return $result;
     }
 
     /**

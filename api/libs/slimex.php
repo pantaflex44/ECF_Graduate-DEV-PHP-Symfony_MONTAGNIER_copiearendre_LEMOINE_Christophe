@@ -286,21 +286,21 @@ class SlimEx
     public static function strip_accents(string $text): string
     {
         $unwanted_array = array(
-            'Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 
-            'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 
-            'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 
-            'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 
-            'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 
-            'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 
-            'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 
-            'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 
-            'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 
-            'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 
-            'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 
-            'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 
-            'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'Ğ' => 'G', 
-            'İ' => 'I', 'Ş' => 'S', 'ğ' => 'g', 'ı' => 'i', 'ş' => 's', 
-            'ü' => 'u',  'ă' => 'a', 'Ă' => 'A', 'ș' => 's', 'Ș' => 'S', 
+            'Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A',
+            'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A',
+            'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E',
+            'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I',
+            'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O',
+            'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U',
+            'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a',
+            'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a',
+            'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e',
+            'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i',
+            'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o',
+            'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u',
+            'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'Ğ' => 'G',
+            'İ' => 'I', 'Ş' => 'S', 'ğ' => 'g', 'ı' => 'i', 'ş' => 's',
+            'ü' => 'u',  'ă' => 'a', 'Ă' => 'A', 'ș' => 's', 'Ș' => 'S',
             'ț' => 't', 'Ț' => 'T'
         );
         return strtr($text, $unwanted_array);
@@ -317,14 +317,39 @@ class SlimEx
     {
         $rule = 'A-Za-z0-9\-';
         if ($allow_spaces) $rule .= '\s';
-        
+
         $text = preg_replace('/[^' . $rule . ']/', '', $text);
-        
+
         if ($spaces_to_hypens) {
             $text = str_replace(' ', '-', $text);
             $text = preg_replace('/-+/', '-', $text);
         }
 
         return $text;
+    }
+
+    /**
+     * La fonction renvoie l'URL racine de l'API en fonction du protocole de serveur et de l'hôte actuels.
+     * 
+     * @return string une chaîne qui représente l'URL racine de l'API.
+     */
+    public static function root_url(): string
+    {
+        return (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/api';
+    }
+
+    /**
+     * La fonction `console_log` est utilisée pour envoyer une valeur à la console du navigateur en PHP.
+     * 
+     * @param mixed output Le paramètre de sortie est la valeur ou la variable que vous souhaitez enregistrer dans la console. Il peut s'agir de n'importe quel type de données, tel qu'une chaîne, un nombre, un tableau ou un objet.
+     * @param bool with_script_tags Le paramètre "with_script_tags" est une valeur booléenne qui détermine s'il faut ou non envelopper l'instruction du journal de la console dans des balises de script HTML. Si la valeur est true, l'instruction du journal de la console sera enveloppée dans des balises de script. Si la valeur est false, l'instruction de journal de la console ne sera pas enveloppée dans des balises de script.
+     */
+    public static function console_log(mixed $output, bool $with_script_tags = true)
+    {
+        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . ');';
+        if ($with_script_tags) {
+            $js_code = '<script>' . $js_code . '</script>';
+        }
+        echo $js_code;
     }
 }

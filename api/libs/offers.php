@@ -257,6 +257,17 @@ class Offers
             $offer['equipments_list'] = json_decode($offer['equipments_list']);
             $offer['informations'] = json_decode($offer['informations']);
             $offer['price'] = floatval($offer['price']);
+
+            $image = $offer['image'];
+            unset($offer['image']);
+            $offer['gallery'] = [];
+            if (trim($image) !== "") {
+                $dir = "./data/gallery/$image";
+                if (is_dir($dir) && is_readable($dir)) {
+                    $offer['gallery'] = Slimex::root_url() . "/image/$image/dfs31dfs43sdfsdf13dfs.png";
+                }
+            }
+            
             $ret['data'][] = $offer;
         }
 

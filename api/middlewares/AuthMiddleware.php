@@ -26,9 +26,12 @@ class AuthMiddleware
         $user = null;
 
         try {
-            $authorization = trim(substr(getallheaders()['authorization'] ?? '', 7));
+            $headers = [];
+            foreach(getallheaders() as $k => $v) $headers[strtolower($k)] = $v;
 
+            $authorization = trim(substr($headers['authorization'] ?? '', 7));
             $decoded = JWT::decode($authorization, new Key($_ENV['JWT_SECRET'], $_ENV['JWT_ALGO']));
+
             if ($decoded->iss === "GVP") {
                 $user = User::byTokenId($request, $decoded->uid, $decoded->tkn);
             }
