@@ -23,37 +23,37 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
             $data = $request->getParsedBody();
 
             $email = trim($data['email']);
-            if (!SlimEx::emailValidator($email)) {
-                return \App\Libs\SlimEx::sendError(400, "Adresse email incorrecte.", ['field' => 'email']);
+            if (!SlimEx::email_validator($email)) {
+                return \App\Libs\SlimEx::send_error(400, "Adresse email incorrecte.", ['field' => 'email']);
             }
             if (User::exists($request, $email)) {
-                return \App\Libs\SlimEx::sendError(400, "Adresse email déjà utilisée.", ['field' => 'email']);
+                return \App\Libs\SlimEx::send_error(400, "Adresse email déjà utilisée.", ['field' => 'email']);
             }
 
             $password = trim($data['password']);
-            if (!SlimEx::passwordValidator($password)) {
-                return \App\Libs\SlimEx::sendError(400, "Mot de passe incorrect. Minimum 8 caractères, 1 minuscule, 1 majuscule et 1 caractère spécial.", ['field' => 'password']);
+            if (!SlimEx::password_validator($password)) {
+                return \App\Libs\SlimEx::send_error(400, "Mot de passe incorrect. Minimum 8 caractères, 1 minuscule, 1 majuscule et 1 caractère spécial.", ['field' => 'password']);
             }
 
             $display_name = trim($data['display_name']);
-            if (!SlimEx::displayNameValidator($display_name)) {
-                return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'display_name']);
+            if (!SlimEx::display_name_validator($display_name)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'display_name']);
             }
 
             if (!User::add($request, $email, $password, $display_name)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible d'enregistrer ce nouvel utilisateur.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible d'enregistrer ce nouvel utilisateur.");
             }
 
             return $response->withStatus(201);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire d'enregistrement du nouvel utilisateur.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -74,7 +74,7 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -83,25 +83,25 @@ class UsersController
             $id = intval($args['id']);
 
             $email = trim($data['email']);
-            if (!SlimEx::emailValidator($email)) {
-                return \App\Libs\SlimEx::sendError(400, "Adresse email incorrecte.", ['field' => 'email']);
+            if (!SlimEx::email_validator($email)) {
+                return \App\Libs\SlimEx::send_error(400, "Adresse email incorrecte.", ['field' => 'email']);
             }
             if (!User::exists($request, $email)) {
-                return \App\Libs\SlimEx::sendError(400, "Adresse email inconnue.", ['field' => 'email']);
+                return \App\Libs\SlimEx::send_error(400, "Adresse email inconnue.", ['field' => 'email']);
             }
 
             $display_name = trim($data['display_name']);
-            if (!SlimEx::displayNameValidator($display_name)) {
-                return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'display_name']);
+            if (!SlimEx::display_name_validator($display_name)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'display_name']);
             }
 
             if (!User::update($request, $id, $email, $display_name)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de modifier cet utilisateur.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier cet utilisateur.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire de modification de l'utilisateur.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -122,7 +122,7 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -131,12 +131,12 @@ class UsersController
             $id = intval($args['id']);
 
             if (!User::delete($request, $id)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de supprimer cet utilisateur.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de supprimer cet utilisateur.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la suppression de l'utilisateur.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -157,7 +157,7 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -171,12 +171,12 @@ class UsersController
             }
 
             if (!User::activate($request, $id, $state)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de modifier l'état de cet utilisateur.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier l'état de cet utilisateur.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire de modification de l'état de cet utilisateur.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -196,7 +196,7 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -211,7 +211,7 @@ class UsersController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -231,14 +231,14 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
             $response->getBody()->write(json_encode(User::list($request)));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -259,7 +259,7 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -270,17 +270,17 @@ class UsersController
             $old_password = trim($data['old_password']);
 
             $new_password = trim($data['new_password']);
-            if (!SlimEx::passwordValidator($new_password)) {
-                return \App\Libs\SlimEx::sendError(400, "Mot de passe incorrect. Minimum 8 caractères, 1 minuscule, 1 majuscule et 1 caractère spécial.", ['field' => 'new_password']);
+            if (!SlimEx::password_validator($new_password)) {
+                return \App\Libs\SlimEx::send_error(400, "Mot de passe incorrect. Minimum 8 caractères, 1 minuscule, 1 majuscule et 1 caractère spécial.", ['field' => 'new_password']);
             }
 
             if (!User::password($request, $id, $old_password, $new_password)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de modifier le mot de passe de cet utilisateur.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier le mot de passe de cet utilisateur.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire de modification du mot de passe de cet utilisateur.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -301,7 +301,7 @@ class UsersController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -313,7 +313,7 @@ class UsersController
             $result = $ret[0];
             $new_password = $ret[1];
             if (!$result) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de modifier le mot de passe de cet utilisateur.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier le mot de passe de cet utilisateur.");
             }
 
             $response->getBody()->write(json_encode([
@@ -321,7 +321,7 @@ class UsersController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire de modification du mot de passe de cet utilisateur.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []

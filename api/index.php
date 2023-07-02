@@ -87,6 +87,7 @@ $routes = [
     ['method' => 'post',    'path' => 'add_comment',                        'controller' => 'CommentsController:add',               'middlewares' => []],
     ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',            'controller' => 'CommentsController:delete',            'middlewares' => []],
 
+    ['method' => 'get',     'path' => 'image/{id}/{file}',                  'controller' => 'OffersController:get_image',           'middlewares' => []],
     ['method' => 'post',    'path' => 'offers[/{page}[/{per_page}]]',       'controller' => 'OffersController:list',                'middlewares' => []],
     ['method' => 'get',     'path' => 'filters_limits',                     'controller' => 'OffersController:filters_limits',      'middlewares' => []],
 ];

@@ -264,7 +264,16 @@ class Offers
             if (trim($image) !== "") {
                 $dir = "./data/gallery/$image";
                 if (is_dir($dir) && is_readable($dir)) {
-                    $offer['gallery'] = Slimex::root_url() . "/image/$image/dfs31dfs43sdfsdf13dfs.png";
+                    $files = scandir($dir, SCANDIR_SORT_ASCENDING);
+                    if (is_array($files)) {
+                        foreach ($files as $file) {
+                            $f = "$dir/$file";
+                            if (is_file($f) && $file !== "." && $file != "..") {
+                                $img_name = base64_encode($file);
+                                $offer['gallery'][] = Slimex::root_url() . "/image/$image/$img_name";
+                            }
+                        }
+                    }
                 }
             }
             
@@ -400,6 +409,33 @@ class Offers
         }
 
         return $filters;
+    }
+
+    /**
+     * La fonction `get_image` récupère le contenu et le type de contenu d'un fichier image en fonction de l'ID et du nom de fichier fournis.
+     * 
+     * @param Request request Le paramètre `` est une instance de la classe `Request`, qui est généralement utilisée pour gérer les requêtes HTTP dans une application Web. Il contient des informations sur la requête en cours, telles que la méthode de requête, les en-têtes et les paramètres de requête.
+     * @param string id Le paramètre `id` est une chaîne qui représente l'ID de la galerie. Il est utilisé pour identifier la galerie spécifique à partir de laquelle l'image est récupérée.
+     * @param string file Le paramètre `file` est une chaîne qui représente le nom du fichier à récupérer dans la galerie. Il devrait être au format encodé en base64.
+     * 
+     * @return array|null un tableau avec deux clés : 'data' et 'content-type'. La valeur de 'data' est le contenu du fichier et la valeur de 'content-type' est le type MIME du fichier. Si le fichier n'existe pas ou si le répertoire n'est pas lisible, la fonction renvoie null.
+     */
+    public static function get_image(Request $request, string $id, string $file): array|null
+    {
+        $file = base64_decode($file);
+        $dir = "./data/gallery/$id";
+        if (is_dir($dir) && is_readable($dir)) {
+            $f = "$dir/$file";
+            if (is_file($f)) {
+                $content = @file_get_contents($f);
+                $finfo = @finfo_open(FILEINFO_MIME);
+                $type = @finfo_file($finfo, $f);
+                @finfo_close($finfo);
+
+                return ['data' => $content, 'content-type' => $type];
+            }
+        }
+        return null;
     }
 
 }

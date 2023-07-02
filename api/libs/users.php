@@ -281,7 +281,7 @@ class User
      * @param Request request  est une instance de la classe Request, qui est utilisée pour gérer les requêtes HTTP dans le framework Slim. Il contient des informations sur la requête en cours, telles que la méthode de requête, les en-têtes et les paramètres.
      * @param int id ID de l'utilisateur dont le mot de passe doit être réinitialisé.
      * @param string old_password L'ancien mot de passe de l'utilisateur qui doit être réinitialisé. Cependant, il n'est pas utilisé dans la fonction et semble inutile.
-     * @param string new_password Le nouveau mot de passe qui sera défini pour l'utilisateur. Il est généré à l'aide de la méthode `generateStrongPassword()` de la bibliothèque `Slimex`.
+     * @param string new_password Le nouveau mot de passe qui sera défini pour l'utilisateur. Il est généré à l'aide de la méthode `generate_strong_password()` de la bibliothèque `Slimex`.
      *
      * @return bool un tableau à deux valeurs : une valeur booléenne indiquant si la réinitialisation du mot de passe a réussi ou non, et une valeur de chaîne contenant le nouveau mot de passe généré par la fonction.
      */
@@ -289,7 +289,7 @@ class User
     {
         $db = $request->getAttribute('db');
 
-        $new_password = \App\Libs\Slimex::generateStrongPassword();
+        $new_password = \App\Libs\Slimex::generate_strong_password();
 
         $sql = "UPDATE users SET password = SHA2(:new_password,512) WHERE id = :id";
         $stmt = $db->prepare($sql);

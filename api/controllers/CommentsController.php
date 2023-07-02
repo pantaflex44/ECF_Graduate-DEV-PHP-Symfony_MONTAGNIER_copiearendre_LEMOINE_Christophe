@@ -25,14 +25,14 @@ class CommentsController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin' && $user?->role !== 'worker') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
             $response->getBody()->write(json_encode(Comments::list($request)));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -54,7 +54,7 @@ class CommentsController
             $response->getBody()->write(json_encode(Comments::approved_list($request)));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -76,39 +76,39 @@ class CommentsController
             $data = $request->getParsedBody();
 
             $name = trim($data['name']);
-            if (!SlimEx::nameValidator($name)) {
-                return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
+            if (!SlimEx::name_validator($name)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
             }
 
             $comment = trim($data['comment']);
-            if (!SlimEx::descriptionValidator($comment)) {
-                return \App\Libs\SlimEx::sendError(400, "Commentaire manquant.", ['field' => 'comment']);
+            if (!SlimEx::description_validator($comment)) {
+                return \App\Libs\SlimEx::send_error(400, "Commentaire manquant.", ['field' => 'comment']);
             }
 
             $rating = floatval(trim($data['rating']));
             if ($rating > 0) $rating = round($rating * 2) / 2;
             if ($rating < 0.0 || $rating > 5.0) {
-                return \App\Libs\SlimEx::sendError(400, "Note incorrecte.", ['field' => 'rating']);
+                return \App\Libs\SlimEx::send_error(400, "Note incorrecte.", ['field' => 'rating']);
             }
 
-            $ip = \App\Libs\SlimEx::getUserIpAddr();
+            $ip = \App\Libs\SlimEx::get_user_ip_addr();
             $last_posted = Comments::last_posted_interval($request, $ip);
             if (!is_null($last_posted)) {
                 $now = new \DateTimeImmutable();
                 $last = $now->add($last_posted);
                 $allowed = $now->add(new \DateInterval('PT30M'));
                 if ($last < $allowed) {
-                    return \App\Libs\SlimEx::sendError(400, "Vous venez de poster un avis. Veuillez patienter 30 minutes entre chaque envoie.", ['field' => 'comment']);
+                    return \App\Libs\SlimEx::send_error(400, "Vous venez de poster un avis. Veuillez patienter 30 minutes entre chaque envoie.", ['field' => 'comment']);
                 }
             }
 
             if (!Comments::add($request, $name, $comment, $rating, $ip)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible d'enregistrer ce nouvel avis.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible d'enregistrer ce nouvel avis.");
             }
 
             return $response->withStatus(201);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire d'enregistrement d'un nouvel avis'.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -129,7 +129,7 @@ class CommentsController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin' && $user?->role !== 'worker') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -138,12 +138,12 @@ class CommentsController
             $id = intval($args['id']);
 
             if (!Comments::delete($request, $id)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de supprimer cet avis.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de supprimer cet avis.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la suppression de l'avis.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []

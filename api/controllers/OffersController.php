@@ -35,7 +35,7 @@ class OffersController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
             //var_dump($ex);
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -58,7 +58,7 @@ class OffersController
             $response->getBody()->write(json_encode($limits));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -66,5 +66,30 @@ class OffersController
         }
     }
 
+    /**
+     * La fonction récupère un fichier image en fonction de l'ID et du nom de fichier fournis, et le renvoie sous forme de réponse avec le type de contenu approprié.
+     * 
+     * @param Request request Le paramètre  est une instance de la classe Request, qui représente une requête HTTP. Il contient des informations sur la requête telles que la méthode de requête, les en-têtes et le corps.
+     * @param Response response Le paramètre `` est une instance de la classe `Response`, qui représente la réponse HTTP qui sera renvoyée au client. Il est utilisé pour définir le corps de la réponse, les en-têtes et le code d'état.
+     * @param array args Le paramètre `` est un tableau qui contient tous les paramètres de route supplémentaires passés à la fonction. Dans ce cas, il est utilisé pour récupérer les valeurs `id` et `file` à partir du chemin de l'URL.
+     * 
+     * @return Response un objet Réponse.
+     */
+    public function get_image(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $id = $args['id'] ?? '';
+            $file = $args['file'] ?? '';
+            $image = Offers::get_image($request, $id, $file);
 
+            $response->getBody()->write($image['data']);
+            return $response->withHeader('Content-Type', $image['content-type'])->withStatus(200);
+        } catch (\Exception $ex) {
+            return \App\Libs\SlimEx::send_error(
+                400,
+                "Impossible de traiter la demande.",
+                $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
+            );
+        }
+    }
 }

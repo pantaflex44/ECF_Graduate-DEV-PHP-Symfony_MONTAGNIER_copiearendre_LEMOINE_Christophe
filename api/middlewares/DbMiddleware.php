@@ -57,7 +57,7 @@ class DbMiddleware
             return $handler->handle($request->withAttribute('db', $pdo));
         } catch (Exception $ex) {
             var_dump($ex);
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 500,
                 "Erreur critique relative au serveur de données",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []

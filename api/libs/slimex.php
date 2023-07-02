@@ -17,7 +17,7 @@ class SlimEx
      *
      * @return Response Un objet de réponse PSR-7 avec un corps codé JSON contenant un message d'erreur et un contenu facultatif, ainsi qu'un code d'état HTTP spécifié et un en-tête Content-Type.
      */
-    public static function sendError(int $code, string $message, array $content = []): Response
+    public static function send_error(int $code, string $message, array $content = []): Response
     {
         $response = new Response();
         $data = [
@@ -35,7 +35,7 @@ class SlimEx
      *
      * @return bool une valeur booléenne. Elle renverra true si la chaîne de mot de passe passée en argument correspond au modèle d'expression régulière spécifié dans la fonction utilisant la fonction preg_match_all(), et false sinon.
      */
-    public static function passwordValidator(string $password): bool
+    public static function password_validator(string $password): bool
     {
         return preg_match_all('$\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])(?=\S*[\W])\S*$', trim($password));
     }
@@ -43,11 +43,11 @@ class SlimEx
     /**
      * La fonction vérifie si un nom d'affichage donné a une longueur d'au moins 3 caractères.
      *
-     * @param string display_name Le paramètre "display_name" est une chaîne qui représente le nom d'affichage d'un utilisateur. La fonction "displayNameValidator" prend cette chaîne en entrée et renvoie une valeur booléenne indiquant si le nom d'affichage est valide ou non. Dans ce cas, la fonction vérifie si la longueur du nom d'affichage coupé est
+     * @param string display_name Le paramètre "display_name" est une chaîne qui représente le nom d'affichage d'un utilisateur. La fonction "display_name_validator" prend cette chaîne en entrée et renvoie une valeur booléenne indiquant si le nom d'affichage est valide ou non. Dans ce cas, la fonction vérifie si la longueur du nom d'affichage coupé est
      *
      * @return bool une valeur booléenne, qui est `true` si la longueur de la chaîne `` coupée est supérieure ou égale à 3, et `false` sinon.
      */
-    public static function displayNameValidator(string $display_name): bool
+    public static function display_name_validator(string $display_name): bool
     {
         return strlen(trim($display_name)) >= 3;
     }
@@ -59,7 +59,7 @@ class SlimEx
      * 
      * @return bool Une valeur booléenne indiquant si la longueur de la chaîne d'entrée coupée est supérieure ou égale à 3.
      */
-    public static function nameValidator(string $name): bool
+    public static function name_validator(string $name): bool
     {
         return strlen(trim($name)) >= 3;
     }
@@ -71,7 +71,7 @@ class SlimEx
      * 
      * @return bool Une valeur booléenne est renvoyée. Il sera `true` si la longueur de la chaîne `` coupée est supérieure à 0, et `false` sinon.
      */
-    public static function descriptionValidator(string $description): bool
+    public static function description_validator(string $description): bool
     {
         return strlen(trim($description)) > 0;
     }
@@ -83,7 +83,7 @@ class SlimEx
      *
      * @return bool Une valeur booléenne indiquant si la chaîne d'e-mail fournie est une adresse e-mail valide ou non.
      */
-    public static function emailValidator(string $email): bool
+    public static function email_validator(string $email): bool
     {
         return filter_var(trim($email), FILTER_VALIDATE_EMAIL);
     }
@@ -91,11 +91,11 @@ class SlimEx
     /**
      * Cette fonction PHP valide si un montant donné est supérieur ou égal à zéro.
      * 
-     * @param float amount Le paramètre « montant » est un type de données flottant représentant une valeur monétaire. La fonction "amountValidator" vérifie si le montant est supérieur ou égal à zéro, ce qui est un contrôle de validation courant pour les valeurs monétaires.
+     * @param float amount Le paramètre « montant » est un type de données flottant représentant une valeur monétaire. La fonction "amount_validator" vérifie si le montant est supérieur ou égal à zéro, ce qui est un contrôle de validation courant pour les valeurs monétaires.
      * 
-     * @return bool La fonction `amountValidator` renvoie une valeur booléenne. Il renverra `true` si le paramètre `` est supérieur ou égal à 0,00, et `false` sinon.
+     * @return bool La fonction `amount_validator` renvoie une valeur booléenne. Il renverra `true` si le paramètre `` est supérieur ou égal à 0,00, et `false` sinon.
      */
-    public static function amountValidator(float $amount): bool
+    public static function amount_validator(float $amount): bool
     {
         return ($amount >= 0.00);
     }
@@ -108,7 +108,7 @@ class SlimEx
      * 
      * @return array un tableau à deux éléments. Le premier élément est une valeur booléenne indiquant si l'image téléchargée est valide ou non. Le deuxième élément est un message de chaîne fournissant plus d'informations sur le résultat de la validation. Si l'image est valide, le message contiendra un URI de données représentant l'image.
      */
-    public static function imageValidator(?UploadedFile $uploaded_file, int $max_allowed_size = 1024000): array
+    public static function image_validator(?UploadedFile $uploaded_file, int $max_allowed_size = 1024000): array
     {
         if (is_null($uploaded_file)) return ['success' => false, 'data' => "Image manquante."];
         if ($uploaded_file->getError() !== UPLOAD_ERR_OK) return ['success' => false, 'data' => "Image incorrecte."];
@@ -124,7 +124,7 @@ class SlimEx
         if ($max_allowed_size < $allowed_size) $allowed_size = $max_allowed_size;
         if ($size > $allowed_size) return ['success' => false, 'data' => sprintf("Taille de l'image incorrecte (max %s).", \App\Libs\SlimEx::human_filesize($allowed_size))];
 
-        $data_uri = \App\Libs\SlimEx::imageToDataUri($uploaded_file->getFilePath(), $extension);
+        $data_uri = \App\Libs\SlimEx::image_to_data_uri($uploaded_file->getFilePath(), $extension);
         return ['success' => true, 'data' => $data_uri];
     }
 
@@ -135,11 +135,11 @@ class SlimEx
      * 
      * @return Si l'attribut `` est `false`, la fonction renverra un message d'erreur avec un code d'état 403 indiquant que l'utilisateur doit être connecté pour effectuer l'opération demandée. Si l'attribut `` est `true`, rien ne sera retourné.
      */
-    public static function onlyConnected(Request $request)
+    public static function only_connected(Request $request)
     {
         $is_connected = $request->getAttribute('is_connected');
         if (!$is_connected) {
-            return SlimEx::sendError(403, "Vous devez être connecté pour effectuer cette opération.");
+            return SlimEx::send_error(403, "Vous devez être connecté pour effectuer cette opération.");
         }
     }
 
@@ -150,11 +150,11 @@ class SlimEx
      *
      * @return Si le rôle de l'utilisateur n'est pas 'admin', la fonction renvoie un message d'erreur avec un code d'état 403.
      */
-    public static function onlyAdmin(Request $request)
+    public static function only_admin(Request $request)
     {
         $owner = $request->getAttribute('user');
         if ($owner->role !== 'admin') {
-            return SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
     }
 
@@ -165,11 +165,11 @@ class SlimEx
      *
      * @return Si le rôle de l'utilisateur n'est pas 'admin' ou 'worker', la fonction renvoie un message d'erreur avec un code d'état 403.
      */
-    public static function onlyAdminAndWorkers(Request $request)
+    public static function only_admin_and_workers(Request $request)
     {
         $owner = $request->getAttribute('user');
         if ($owner->role !== 'admin' && $owner->role !== 'worker') {
-            return SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
     }
 
@@ -182,7 +182,7 @@ class SlimEx
      *
      * @return un mot de passe fort généré aléatoirement. Si le paramètre  est défini sur true, le mot de passe inclura également des tirets pour plus de lisibilité.
      */
-    public static function generateStrongPassword($length = 9, $add_dashes = false, $available_sets = 'luds')
+    public static function generate_strong_password($length = 9, $add_dashes = false, $available_sets = 'luds')
     {
         $sets = array();
         if (strpos($available_sets, 'l') !== false) {
@@ -233,7 +233,7 @@ class SlimEx
      * 
      * @return string une chaîne d'URI de données qui représente le fichier image situé dans le chemin de fichier donné. La chaîne d'URI de données inclut le type d'image (déterminé à partir de l'extension de fichier), les données d'image codées en base64 et le préfixe "data:image" qui l'identifie en tant qu'URI de données.
      */
-    public static function imageToDataUri(string $filepath, string $type): string
+    public static function image_to_data_uri(string $filepath, string $type): string
     {
         $data = file_get_contents($filepath);
         return 'data:image/' . $type . ';base64,' . base64_encode($data);
@@ -264,7 +264,7 @@ class SlimEx
      * 
      * @return string l'adresse IP de l'utilisateur accédant au site Web.
      */
-    public static function getUserIpAddr(): string
+    public static function get_user_ip_addr(): string
     {
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -351,5 +351,24 @@ class SlimEx
             $js_code = '<script>' . $js_code . '</script>';
         }
         echo $js_code;
+    }
+
+    /**
+     * La fonction `uniqid_real` génère un identifiant unique d'une longueur spécifiée à l'aide d'une fonction aléatoire cryptographiquement sécurisée.
+     * 
+     * @param int lenght Le paramètre `length` spécifie la longueur de l'identifiant unique généré. Par défaut, il est défini sur 13.
+     * 
+     * @return string une chaîne générée à l'aide d'une fonction aléatoire cryptographiquement sécurisée. La longueur de la chaîne est déterminée par le paramètre ``, qui par défaut est 13 s'il n'est pas spécifié.
+     */
+    public static function uniqid_real(int $lenght = 13): string
+    {
+        if (function_exists("random_bytes")) {
+            $bytes = random_bytes(ceil($lenght / 2));
+        } elseif (function_exists("openssl_random_pseudo_bytes")) {
+            $bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
+        } else {
+            throw new \Exception("no cryptographically secure random function available");
+        }
+        return substr(bin2hex($bytes), 0, $lenght);
     }
 }

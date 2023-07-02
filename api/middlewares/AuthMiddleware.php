@@ -36,7 +36,7 @@ class AuthMiddleware
                 $user = User::byTokenId($request, $decoded->uid, $decoded->tkn);
             }
         } catch (ExpiredException $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 410,
                 "La connexion a expirée",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []

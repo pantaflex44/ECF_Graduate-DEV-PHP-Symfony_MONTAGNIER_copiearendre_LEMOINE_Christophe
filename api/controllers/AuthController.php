@@ -22,11 +22,11 @@ class AuthController
     {
         $user = User::byCredentials($request);
         if(is_null($user)) {
-            return \App\Libs\SlimEx::sendError(401, "Nom d'utilisateur ou mot de passe invalide.");
+            return \App\Libs\SlimEx::send_error(401, "Nom d'utilisateur ou mot de passe invalide.");
         }
 
         if ($user->active !== 1) {
-            return \App\Libs\SlimEx::sendError(403, "Compte bloqué.");
+            return \App\Libs\SlimEx::send_error(403, "Compte bloqué.");
         }
 
         $new_user_token = \App\Libs\createUniqToken();
@@ -56,7 +56,7 @@ class AuthController
     {
         $user = $request->getAttribute('user');
         if (is_null($user)) {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         $new_user_token = \App\Libs\createUniqToken();
@@ -82,7 +82,7 @@ class AuthController
     {
         $user = $request->getAttribute('user');
         if (is_null($user)) {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
         
         $logedout = $user->setToken('');

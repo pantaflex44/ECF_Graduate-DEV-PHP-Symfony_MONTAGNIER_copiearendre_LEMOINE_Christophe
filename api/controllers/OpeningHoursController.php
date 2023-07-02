@@ -27,7 +27,7 @@ class OpeningHoursController
             $response->getBody()->write(json_encode(OpeningHours::list($request)));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -47,7 +47,7 @@ class OpeningHoursController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -55,47 +55,47 @@ class OpeningHoursController
 
             $dayOfWeek = intval($data['dayOfWeek']);
             if ($dayOfWeek < 0 || $dayOfWeek > 6) {
-                return \App\Libs\SlimEx::sendError(400, "Jour d'ouverture incorrect.", ['field' => 'dayOfWeek']);
+                return \App\Libs\SlimEx::send_error(400, "Jour d'ouverture incorrect.", ['field' => 'dayOfWeek']);
             }
 
             $open_hours = intval(trim($data['open_hours']));
             if ($open_hours < 0 || $open_hours > 24) {
-                return \App\Libs\SlimEx::sendError(400, "Heure d'ouverture incorrecte.", ['field' => 'open_hours']);
+                return \App\Libs\SlimEx::send_error(400, "Heure d'ouverture incorrecte.", ['field' => 'open_hours']);
             }
             if ($open_hours === 24) $open_hours = 0;
 
             $open_minutes = intval(trim($data['open_minutes']));
             if ($open_minutes < 0 || $open_minutes > 60) {
-                return \App\Libs\SlimEx::sendError(400, "Minutes d'ouverture incorrecte.", ['field' => 'open_minutes']);
+                return \App\Libs\SlimEx::send_error(400, "Minutes d'ouverture incorrecte.", ['field' => 'open_minutes']);
             }
             if ($open_minutes === 60) $open_minutes = 0;
 
             $close_hours = intval(trim($data['close_hours']));
             if ($close_hours < 0 || $close_hours > 24) {
-                return \App\Libs\SlimEx::sendError(400, "Heure de fermeture incorrecte.", ['field' => 'close_hours']);
+                return \App\Libs\SlimEx::send_error(400, "Heure de fermeture incorrecte.", ['field' => 'close_hours']);
             }
             if ($close_hours === 24) $close_hours = 0;
 
             $close_minutes = intval(trim($data['close_minutes']));
             if ($close_minutes < 0 || $close_minutes > 60) {
-                return \App\Libs\SlimEx::sendError(400, "Minutes de fermeture incorrecte.", ['field' => 'close_minutes']);
+                return \App\Libs\SlimEx::send_error(400, "Minutes de fermeture incorrecte.", ['field' => 'close_minutes']);
             }
             if ($close_minutes === 60) $close_minutes = 0;
 
             if (OpeningHours::start_exists($request, $dayOfWeek, $open_hours, $open_minutes)) {
-                return \App\Libs\SlimEx::sendError(400, "Ouverture dans une période connue.", ['field' => 'open_hours']);
+                return \App\Libs\SlimEx::send_error(400, "Ouverture dans une période connue.", ['field' => 'open_hours']);
             }
             if (OpeningHours::end_exists($request, $dayOfWeek, $close_hours, $close_minutes)) {
-                return \App\Libs\SlimEx::sendError(400, "Fermeture dans une période connue.", ['field' => 'open_hours']);
+                return \App\Libs\SlimEx::send_error(400, "Fermeture dans une période connue.", ['field' => 'open_hours']);
             }
 
             if (!OpeningHours::add($request, $dayOfWeek, $open_hours, $open_minutes, $close_hours, $close_minutes)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible d'enregistrer cette nouvelle période d'ouverture.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible d'enregistrer cette nouvelle période d'ouverture.");
             }
 
             return $response->withStatus(201);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire d'enregistrement d'une nouvelle période d'ouverture.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -116,7 +116,7 @@ class OpeningHoursController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -126,40 +126,40 @@ class OpeningHoursController
 
             $dayOfWeek = intval($data['dayOfWeek']);
             if ($dayOfWeek < 0 || $dayOfWeek > 6) {
-                return \App\Libs\SlimEx::sendError(400, "Jour d'ouverture incorrect.", ['field' => 'dayOfWeek']);
+                return \App\Libs\SlimEx::send_error(400, "Jour d'ouverture incorrect.", ['field' => 'dayOfWeek']);
             }
 
             $open_hours = intval(trim($data['open_hours']));
             if ($open_hours < 0 || $open_hours > 24) {
-                return \App\Libs\SlimEx::sendError(400, "Heure d'ouverture incorrecte.", ['field' => 'open_hours']);
+                return \App\Libs\SlimEx::send_error(400, "Heure d'ouverture incorrecte.", ['field' => 'open_hours']);
             }
             if ($open_hours === 24) $open_hours = 0;
 
             $open_minutes = intval(trim($data['open_minutes']));
             if ($open_minutes < 0 || $open_minutes > 60) {
-                return \App\Libs\SlimEx::sendError(400, "Minutes d'ouverture incorrecte.", ['field' => 'open_minutes']);
+                return \App\Libs\SlimEx::send_error(400, "Minutes d'ouverture incorrecte.", ['field' => 'open_minutes']);
             }
             if ($open_minutes === 60) $open_minutes = 0;
 
             $close_hours = intval(trim($data['close_hours']));
             if ($close_hours < 0 || $close_hours > 24) {
-                return \App\Libs\SlimEx::sendError(400, "Heure de fermeture incorrecte.", ['field' => 'close_hours']);
+                return \App\Libs\SlimEx::send_error(400, "Heure de fermeture incorrecte.", ['field' => 'close_hours']);
             }
             if ($close_hours === 24) $close_hours = 0;
 
             $close_minutes = intval(trim($data['close_minutes']));
             if ($close_minutes < 0 || $close_minutes > 60) {
-                return \App\Libs\SlimEx::sendError(400, "Minutes de fermeture incorrecte.", ['field' => 'close_minutes']);
+                return \App\Libs\SlimEx::send_error(400, "Minutes de fermeture incorrecte.", ['field' => 'close_minutes']);
             }
             if ($close_minutes === 60) $close_minutes = 0;
 
             if (!OpeningHours::update($request, $id, $dayOfWeek, $open_hours, $open_minutes, $close_hours, $close_minutes)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de modifier cette période d'ouverture.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier cette période d'ouverture.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire de modification de la période d'ouverture.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -180,7 +180,7 @@ class OpeningHoursController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -189,12 +189,12 @@ class OpeningHoursController
             $id = intval($args['id']);
 
             if (!OpeningHours::delete($request, $id)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de supprimer cette plage horaire.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de supprimer cette plage horaire.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la suppression de la plage horaire.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []

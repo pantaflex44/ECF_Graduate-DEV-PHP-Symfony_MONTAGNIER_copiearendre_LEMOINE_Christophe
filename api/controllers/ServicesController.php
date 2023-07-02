@@ -25,7 +25,7 @@ class ServicesController
             $response->getBody()->write(json_encode(Service::list($request)));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -45,7 +45,7 @@ class ServicesController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -53,33 +53,33 @@ class ServicesController
             $uploadedFiles = $request->getUploadedFiles();
 
             $name = trim($data['name']);
-            if (!SlimEx::nameValidator($name)) {
-                return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
+            if (!SlimEx::name_validator($name)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
             }
 
             $amount = floatval(trim($data['amount']));
-            if (!SlimEx::amountValidator($amount)) {
-                return \App\Libs\SlimEx::sendError(400, "Montant incorrect.", ['field' => 'amount']);
+            if (!SlimEx::amount_validator($amount)) {
+                return \App\Libs\SlimEx::send_error(400, "Montant incorrect.", ['field' => 'amount']);
             }
 
             $description = trim($data['description']);
-            if (!SlimEx::descriptionValidator($description)) {
-                return \App\Libs\SlimEx::sendError(400, "Description incorrecte. Minimum 3 caractères.", ['field' => 'description']);
+            if (!SlimEx::description_validator($description)) {
+                return \App\Libs\SlimEx::send_error(400, "Description incorrecte. Minimum 3 caractères.", ['field' => 'description']);
             }
 
-            $uploadedFile = \App\Libs\SlimEx::imageValidator($uploadedFiles['image']);
+            $uploadedFile = \App\Libs\SlimEx::image_validator($uploadedFiles['image']);
             if ($uploadedFile['success'] !== true) {
-                return \App\Libs\SlimEx::sendError(400, $uploadedFile['data'], ['field' => 'image']);
+                return \App\Libs\SlimEx::send_error(400, $uploadedFile['data'], ['field' => 'image']);
             }
             $dataUri = $uploadedFile['data'];
 
             if (!Service::add($request, $name, $amount, $description, $dataUri)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible d'enregistrer ce nouveau service.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible d'enregistrer ce nouveau service.");
             }
 
             return $response->withStatus(201);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire d'enregistrement d'un nouveau service'.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -100,7 +100,7 @@ class ServicesController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -110,33 +110,33 @@ class ServicesController
             $id = intval($args['id']);
 
             $name = trim($data['name']);
-            if (!SlimEx::nameValidator($name)) {
-                return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
+            if (!SlimEx::name_validator($name)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
             }
 
             $amount = floatval(trim($data['amount']));
-            if (!SlimEx::amountValidator($amount)) {
-                return \App\Libs\SlimEx::sendError(400, "Montant incorrect.", ['field' => 'amount']);
+            if (!SlimEx::amount_validator($amount)) {
+                return \App\Libs\SlimEx::send_error(400, "Montant incorrect.", ['field' => 'amount']);
             }
 
             $description = trim($data['description']);
-            if (!SlimEx::descriptionValidator($description)) {
-                return \App\Libs\SlimEx::sendError(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'description']);
+            if (!SlimEx::description_validator($description)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'description']);
             }
 
-            $uploadedFile = \App\Libs\SlimEx::imageValidator($uploadedFiles['image'], 40960);
+            $uploadedFile = \App\Libs\SlimEx::image_validator($uploadedFiles['image'], 40960);
             if ($uploadedFile['success'] !== true) {
-                return \App\Libs\SlimEx::sendError(400, $uploadedFile['data'], ['field' => 'image']);
+                return \App\Libs\SlimEx::send_error(400, $uploadedFile['data'], ['field' => 'image']);
             }
             $dataUri = $uploadedFile['data'];
 
             if (!Service::update($request, $id, $name, $amount, $description, $dataUri)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de modifier ce service.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier ce service.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter le formulaire de modification du service.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
@@ -157,7 +157,7 @@ class ServicesController
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin') {
-            return \App\Libs\SlimEx::sendError(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
         }
 
         try {
@@ -166,12 +166,12 @@ class ServicesController
             $id = intval($args['id']);
 
             if (!Service::delete($request, $id)) {
-                return \App\Libs\SlimEx::sendError(400, "Impossible de supprimer ce service.");
+                return \App\Libs\SlimEx::send_error(400, "Impossible de supprimer ce service.");
             }
 
             return $response->withStatus(200);
         } catch (\Exception $ex) {
-            return \App\Libs\SlimEx::sendError(
+            return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la suppression du service.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
