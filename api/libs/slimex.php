@@ -2,6 +2,7 @@
 
 namespace App\Libs;
 
+use GdImage;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\UploadedFile as UploadedFile;
 use Slim\Psr7\Response;
@@ -370,5 +371,210 @@ class SlimEx
             throw new \Exception("no cryptographically secure random function available");
         }
         return substr(bin2hex($bytes), 0, $lenght);
+    }
+
+    /**
+     * La fonction `image_to_gd` prend un chemin de fichier en entrée et renvoie une ressource d'image GD ou null en fonction du type de fichier.
+     * 
+     * @param string file Le paramètre `` est une chaîne qui représente le chemin d'accès au fichier image que vous souhaitez convertir en une ressource d'image GD.
+     * 
+     * @return GdImage|null un objet GdImage ou null.
+     */
+    public static function image_to_gd(string $file, string $mimetype): array|null
+    {
+        $source = false;
+        $transparent_color = null;
+
+        switch ($mimetype) {
+            case 'image/avif':
+                $source = imagecreatefromavif($file);
+                break;
+            case 'image/bmp':
+                $source = imagecreatefrombmp($file);
+                break;
+            case 'image/gif':
+                $source = imagecreatefromgif($file);
+                $transparent_index = imagecolortransparent($source);
+                if ($transparent_index != (-1)) $transparent_color = imagecolorsforindex($source, $transparent_index);
+                break;
+            case 'image/jpeg':
+                $source = imagecreatefromjpeg($file);
+                break;
+            case 'image/png':
+                $source = imagecreatefrompng($file);
+                imagealphablending($source, true);
+                imagesavealpha($source, true);
+                break;
+            case 'image/tga':
+                $source = imagecreatefromtga($file);
+                break;
+            case 'image/vnd':
+                $source = imagecreatefromwbmp($file);
+                break;
+            case 'image/webp':
+                $source = imagecreatefromwebp($file);
+                break;
+            case 'image/x-xbitmap':
+                $source = imagecreatefromxbm($file);
+                break;
+            case 'image/x-xpixmap':
+                $source = imagecreatefromxpm($file);
+                break;
+        }
+
+        return ['mimetype' => $mimetype, 'gd' => $source, 'transparent_color' => $transparent_color];
+    }
+
+    /**
+     * La fonction prend une image GD ou une valeur booléenne, une chaîne représentant le type d'image et un tableau facultatif pour la couleur transparente, et renvoie l'image GD modifiée ou null si l'image d'entrée est fausse.
+     * 
+     * @param GdImage img Le paramètre `` est de type `GdImage|bool`, ce qui signifie qu'il peut accepter soit un objet `GdImage` soit une valeur booléenne. Il représente l'image que vous souhaitez traiter.
+     * @param string type Le paramètre `` est une chaîne qui représente le type d'image. Il peut s'agir de l'une des valeurs suivantes :
+     * @param array transparent_color Le paramètre `transparent_color` est un tableau facultatif qui contient les valeurs RVB pour la couleur transparente. Il a trois touches : "rouge", "vert" et "bleu", qui représentent l'intensité de chaque composante de couleur. Ce paramètre n'est utilisé que lorsque le `` est `'image/gif'`.
+     * 
+     * @return GdImage|null la variable ``, qui est de type `GdImage|null`.
+     */
+    public static function typed_gd(GdImage|bool $img, string $mimetype, array|null $transparent_color = null): GdImage|bool
+    {
+        if (!$img) return false;
+
+        switch ($mimetype)
+        {
+            case 'image/png':
+                imagealphablending($img, false);
+                imagesavealpha($img, true);
+                break;
+            case 'image/gif':
+                $transparent_new = imagecolorallocate($img, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
+                $transparent_new_index = imagecolortransparent($img, $transparent_new);
+                imagefill($img, 0, 0, $transparent_new_index);
+        }
+
+        return $img;
+    }
+
+    /**
+     * La fonction `gd_to_content` prend une ressource d'image GD ou une valeur booléenne et renvoie le contenu de l'image sous forme de chaîne ou de valeur booléenne.
+     * 
+     * @param GdImage img Le paramètre `` est de type `GdImage|bool`. Il peut accepter soit un objet `GdImage` soit une valeur booléenne.
+     * 
+     * @return string|bool une chaîne ou une valeur booléenne.
+     */
+    public static function gd_to_content(GdImage|bool $img, string $mimetype = 'image/png'): string|bool
+    {
+        if ($img === false) return false;
+
+        $stream = fopen('php://memory', 'r+');
+        
+        switch ($mimetype)
+        {
+            case 'image/avif':
+                imageavif($img, $stream);
+                break;
+            case 'image/bmp':
+                imagebmp($img, $stream);
+                break;
+            case 'image/gif':
+                imagegif($img, $stream);
+                break;
+            case 'image/jpeg':
+                imagejpeg($img, $stream);
+                break;
+            case 'image/vnd':
+                imagewbmp($img, $stream);
+                break;
+            case 'image/webp':
+                imagewebp($img, $stream);
+                break;
+            case 'image/x-xbitmap':
+                imagexbm($img, $stream);
+                break;
+            default:
+                imagepng($img, $stream);
+        }
+        
+        rewind($stream);
+        $content = stream_get_contents($stream);
+        
+        fclose($stream);
+        
+        return $content;
+    }
+
+    /**
+     * La fonction `image_resize` redimensionne un fichier image à une largeur et une hauteur spécifiées à l'aide de la bibliothèque GD de PHP.
+     * 
+     * @param string file Le paramètre `file` est une chaîne qui représente le chemin d'accès au fichier image que vous souhaitez redimensionner.
+     * @param int new_width Le paramètre `new_width` est un entier qui représente la largeur souhaitée de l'image redimensionnée.
+     * @param int new_height Le paramètre "new_height" est un entier qui représente la hauteur souhaitée de l'image redimensionnée.
+     * 
+     * @return GdImage|bool un objet GdImage ou false.
+     */
+    public static function image_resize(string $file, string $mimetype, int $new_width, int $new_height): GdImage|bool
+    {
+        list($width, $height) = getimagesize($file);
+
+        $source = SlimEx::image_to_gd($file, $mimetype);
+        if ($source === false || ($source['gd'] ?? false) === false) return false;
+        
+        $thumb = Slimex::typed_gd(imagecreatetruecolor($new_width, $new_height), $source['mimetype'], $source['transparent_color']);
+        if ($thumb === false) return false;
+
+        imagecopyresized($thumb, $source['gd'], 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+        imagedestroy($source['gd']);
+        
+        return $thumb;
+    }
+
+    /**
+     * La fonction `image_resize_scale` redimensionne un fichier image d'un pourcentage donné et renvoie le contenu de l'image redimensionnée.
+     * 
+     * @param string file Le paramètre "file" est une chaîne qui représente le chemin d'accès au fichier image que vous souhaitez redimensionner.
+     * @param int percent Le paramètre "pourcentage" est un entier qui représente le pourcentage par lequel l'image doit être redimensionnée. Il détermine la nouvelle largeur et la hauteur de l'image en fonction des dimensions d'origine. Par exemple, si le pourcentage est défini sur 50, l'image sera redimensionnée à la moitié de sa taille d'origine.
+     * 
+     * @return string|false une chaîne ou faux.
+     */
+    public static function image_resize_scale(string $file, string $mimetype, int $percent): string|false
+    {
+        list($width, $height) = getimagesize($file);
+        if ($percent < 0) $percent = 0;
+        if ($percent > 100) $percent = 100;
+        $new_width = $width * ($percent / 100);
+        $new_height = $height * ($percent / 100);
+
+        $thumb = Slimex::image_resize($file, $mimetype, $new_width, $new_height);
+        $content = Slimex::gd_to_content($thumb, $mimetype);
+
+        return $content;
+    }
+
+    /**
+     * La fonction `image_resize_wh` redimensionne une image tout en conservant son rapport d'aspect en fonction de la largeur et de la hauteur maximales fournies.
+     * 
+     * @param string file Le paramètre file est une chaîne qui représente le chemin d'accès au fichier image que vous souhaitez redimensionner.
+     * @param string mimetype Le paramètre `mimetype` est une chaîne qui représente le type MIME du fichier image. Les types MIME sont utilisés pour identifier le type de données contenues dans un fichier. Par exemple, les types MIME courants pour les images incluent "image/jpeg", "image/png" et "image/gif".
+     * @param int max_width La largeur maximale que l'image redimensionnée doit avoir.
+     * @param int max_height Le paramètre `max_height` est la hauteur maximale souhaitée pour l'image redimensionnée.
+     * 
+     * @return string|false une chaîne ou faux.
+     */
+    public static function image_resize_wh(string $file, string $mimetype, int $max_width, int $max_height): string|false
+    {
+        list($width, $height) = getimagesize($file);
+        $new_width = $max_width != 0 ? $max_width : $width;
+        $new_height = $max_height != 0 ? $max_height : $height;
+        if ($width > $height && $new_height < $height) {
+            $new_height = $height / ($width / $new_width);
+        } else if ($width < $height && $new_width < $width) {
+            $new_width = $width / ($height / $new_height);
+        } else {
+            $new_width = $width;
+            $new_height = $height;
+        }
+
+        $thumb = Slimex::image_resize($file, $mimetype, $new_width, $new_height);
+        $content = Slimex::gd_to_content($thumb, $mimetype);
+
+        return $content;
     }
 }

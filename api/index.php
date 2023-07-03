@@ -59,37 +59,37 @@ $app->get('/api', function (Request $request, Response $response) {
 
 /* Ce code définit un tableau qui contient des informations sur les différentes routes que l'application va gérer. Chaque élément du tableau représente une route et contient la méthode HTTP, le chemin du point de terminaison, la méthode du contrôleur qui gérera la requête et tous les middlewares qui doivent être appliqués à la route. */
 $routes = [
-    ['method' => 'post',    'path' => 'login',                              'controller' => 'AuthController:login',                 'middlewares' => []],
-    ['method' => 'get',     'path' => 'refresh',                            'controller' => 'AuthController:refresh',               'middlewares' => []],
-    ['method' => 'get',     'path' => 'logout',                             'controller' => 'AuthController:logout',                'middlewares' => []],
+    ['method' => 'post',    'path' => 'login',                                      'controller' => 'AuthController:login',                 'middlewares' => []],
+    ['method' => 'get',     'path' => 'refresh',                                    'controller' => 'AuthController:refresh',               'middlewares' => []],
+    ['method' => 'get',     'path' => 'logout',                                     'controller' => 'AuthController:logout',                'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'users',                              'controller' => 'UsersController:list',                 'middlewares' => []],
-    ['method' => 'post',    'path' => 'user_exists',                        'controller' => 'UsersController:exists',               'middlewares' => []],
-    ['method' => 'post',    'path' => 'add_user',                           'controller' => 'UsersController:add',                  'middlewares' => []],
-    ['method' => 'post',    'path' => 'update_user/{id:\d+}',               'controller' => 'UsersController:update',               'middlewares' => []],
-    ['method' => 'delete',  'path' => 'delete_user/{id:\d+}',               'controller' => 'UsersController:delete',               'middlewares' => []],
-    ['method' => 'post',    'path' => 'activate_user/{id:\d+}',             'controller' => 'UsersController:activate',             'middlewares' => []],
-    ['method' => 'post',    'path' => 'change_user_password/{id:\d+}',      'controller' => 'UsersController:password',             'middlewares' => []],
-    ['method' => 'get',     'path' => 'reset_user_password/{id:\d+}',       'controller' => 'UsersController:reset',                'middlewares' => []],
+    ['method' => 'get',     'path' => 'users',                                      'controller' => 'UsersController:list',                 'middlewares' => []],
+    ['method' => 'post',    'path' => 'user_exists',                                'controller' => 'UsersController:exists',               'middlewares' => []],
+    ['method' => 'post',    'path' => 'add_user',                                   'controller' => 'UsersController:add',                  'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_user/{id:\d+}',                       'controller' => 'UsersController:update',               'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_user/{id:\d+}',                       'controller' => 'UsersController:delete',               'middlewares' => []],
+    ['method' => 'post',    'path' => 'activate_user/{id:\d+}',                     'controller' => 'UsersController:activate',             'middlewares' => []],
+    ['method' => 'post',    'path' => 'change_user_password/{id:\d+}',              'controller' => 'UsersController:password',             'middlewares' => []],
+    ['method' => 'get',     'path' => 'reset_user_password/{id:\d+}',               'controller' => 'UsersController:reset',                'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'services',                           'controller' => 'ServicesController:list',              'middlewares' => []],
-    ['method' => 'post',    'path' => 'add_service',                        'controller' => 'ServicesController:add',               'middlewares' => []],
-    ['method' => 'post',    'path' => 'update_service/{id:\d+}',            'controller' => 'ServicesController:update',            'middlewares' => []],
-    ['method' => 'delete',  'path' => 'delete_service/{id:\d+}',            'controller' => 'ServicesController:delete',            'middlewares' => []],
+    ['method' => 'get',     'path' => 'services',                                   'controller' => 'ServicesController:list',              'middlewares' => []],
+    ['method' => 'post',    'path' => 'add_service',                                'controller' => 'ServicesController:add',               'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_service/{id:\d+}',                    'controller' => 'ServicesController:update',            'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_service/{id:\d+}',                    'controller' => 'ServicesController:delete',            'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'openings',                           'controller' => 'OpeningHoursController:list',          'middlewares' => []],
-    ['method' => 'post',    'path' => 'add_period',                         'controller' => 'OpeningHoursController:add',           'middlewares' => []],
-    ['method' => 'post',    'path' => 'update_period/{id:\d+}',             'controller' => 'OpeningHoursController:update',        'middlewares' => []],
-    ['method' => 'delete',  'path' => 'delete_period/{id:\d+}',             'controller' => 'OpeningHoursController:delete',        'middlewares' => []],
+    ['method' => 'get',     'path' => 'openings',                                   'controller' => 'OpeningHoursController:list',          'middlewares' => []],
+    ['method' => 'post',    'path' => 'add_period',                                 'controller' => 'OpeningHoursController:add',           'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_period/{id:\d+}',                     'controller' => 'OpeningHoursController:update',        'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_period/{id:\d+}',                     'controller' => 'OpeningHoursController:delete',        'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'comments',                           'controller' => 'CommentsController:list',              'middlewares' => []],
-    ['method' => 'get',     'path' => 'approved_comments',                  'controller' => 'CommentsController:approved_list',     'middlewares' => []],
-    ['method' => 'post',    'path' => 'add_comment',                        'controller' => 'CommentsController:add',               'middlewares' => []],
-    ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',            'controller' => 'CommentsController:delete',            'middlewares' => []],
+    ['method' => 'get',     'path' => 'comments',                                   'controller' => 'CommentsController:list',              'middlewares' => []],
+    ['method' => 'get',     'path' => 'approved_comments',                          'controller' => 'CommentsController:approved_list',     'middlewares' => []],
+    ['method' => 'post',    'path' => 'add_comment',                                'controller' => 'CommentsController:add',               'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',                    'controller' => 'CommentsController:delete',            'middlewares' => []],
 
-    ['method' => 'get',     'path' => 'image/{id}/{file}',                  'controller' => 'OffersController:get_image',           'middlewares' => []],
-    ['method' => 'post',    'path' => 'offers[/{page}[/{per_page}]]',       'controller' => 'OffersController:list',                'middlewares' => []],
-    ['method' => 'get',     'path' => 'filters_limits',                     'controller' => 'OffersController:filters_limits',      'middlewares' => []],
+    ['method' => 'get',     'path' => 'image/{id}/{file}[/{w:\d+}[/{h:\d+}]]',      'controller' => 'OffersController:get_image',           'middlewares' => []],
+    ['method' => 'post',    'path' => 'offers[/{page}[/{per_page}]]',               'controller' => 'OffersController:list',                'middlewares' => []],
+    ['method' => 'get',     'path' => 'filters_limits',                             'controller' => 'OffersController:filters_limits',      'middlewares' => []],
 ];
 foreach ($routes as $route) {
     $r = $app->map(

@@ -80,7 +80,20 @@ class OffersController
         try {
             $id = $args['id'] ?? '';
             $file = $args['file'] ?? '';
-            $image = Offers::get_image($request, $id, $file);
+            $w = $args['w'] ?? null;
+            $h = $args['h'] ?? null;
+
+            $size = [];
+            if (!is_null($w) && is_null($h)) {
+                $size['mode'] = 'scale';
+                $size['percent'] = intval($w);
+            } elseif (!is_null($w) && !is_null($h)) {
+                $size['mode'] = 'resize';
+                $size['width'] = intval($w);
+                $size['height'] = intval($h);
+            }
+
+            $image = Offers::get_image($request, $id, $file, $size);
 
             $response->getBody()->write($image['data']);
             return $response->withHeader('Content-Type', $image['content-type'])->withStatus(200);

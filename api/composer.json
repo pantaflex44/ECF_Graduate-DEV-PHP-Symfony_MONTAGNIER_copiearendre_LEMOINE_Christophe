@@ -8,6 +8,12 @@
     "scripts": {
         "start": [
             "php -S localhost:8080"
+        ],
+        "stop": [
+            "killall -9 php"
+        ],
+        "infos": [
+            "php -S localhost:8081 -t others/"
         ]
     }
 }

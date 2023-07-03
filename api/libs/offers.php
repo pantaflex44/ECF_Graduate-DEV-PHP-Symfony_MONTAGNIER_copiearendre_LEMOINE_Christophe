@@ -420,19 +420,32 @@ class Offers
      * 
      * @return array|null un tableau avec deux clés : 'data' et 'content-type'. La valeur de 'data' est le contenu du fichier et la valeur de 'content-type' est le type MIME du fichier. Si le fichier n'existe pas ou si le répertoire n'est pas lisible, la fonction renvoie null.
      */
-    public static function get_image(Request $request, string $id, string $file): array|null
+    public static function get_image(Request $request, string $id, string $file, array $size): array|null
     {
         $file = base64_decode($file);
         $dir = "./data/gallery/$id";
         if (is_dir($dir) && is_readable($dir)) {
             $f = "$dir/$file";
-            if (is_file($f)) {
-                $content = @file_get_contents($f);
+            if (is_file($f) && is_readable($f)) {
                 $finfo = @finfo_open(FILEINFO_MIME);
-                $type = @finfo_file($finfo, $f);
+                $mimetype = @finfo_file($finfo, $f);
                 @finfo_close($finfo);
+                if ($mimetype === false) $mimetype = '';
+                $mimetype = strtolower(trim(explode(';', $mimetype)[0]));
+                
+                $content = '';
+                switch ($size['mode'] ?? '') {
+                    case 'scale':
+                        $content = \App\Libs\SlimEx::image_resize_scale($f, $mimetype, $size['percent'] ?? 100);
+                        break;
+                    case 'resize':
+                        $content = \App\Libs\SlimEx::image_resize_wh($f, $mimetype, $size['width'] ?? 0, $size['height'] ?? 0);
+                        break;
+                }
 
-                return ['data' => $content, 'content-type' => $type];
+                if ($content === false || $content === '') $content = @file_get_contents($f);
+
+                return ['data' => $content, 'content-type' => $mimetype];
             }
         }
         return null;
