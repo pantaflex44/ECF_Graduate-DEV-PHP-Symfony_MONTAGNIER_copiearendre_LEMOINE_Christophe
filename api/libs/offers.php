@@ -276,7 +276,7 @@ class Offers
                     }
                 }
             }
-            
+
             $ret['data'][] = $offer;
         }
 
@@ -305,7 +305,7 @@ class Offers
 
         $options = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?? [];
 
-        return ['key' =>$key, 'component' => 'choices', 'options' => $options];
+        return ['key' => $key, 'component' => 'choices', 'options' => $options];
     }
 
     /**
@@ -336,7 +336,7 @@ class Offers
             $max = floatval($row[0]['max']);
         }
 
-        return ['key' =>$key, 'component' => 'minmax_range', 'min' => $min, 'max' => $max];
+        return ['key' => $key, 'component' => 'minmax_range', 'min' => $min, 'max' => $max];
     }
 
     /**
@@ -368,7 +368,7 @@ class Offers
             }, json_decode($list[0]));
         }
 
-        return ['key' =>$key, 'component' => 'text_with_autocomplete', 'list' => $list];
+        return ['key' => $key, 'component' => 'text_with_autocomplete', 'list' => $list];
     }
 
     /**
@@ -432,7 +432,7 @@ class Offers
                 @finfo_close($finfo);
                 if ($mimetype === false) $mimetype = '';
                 $mimetype = strtolower(trim(explode(';', $mimetype)[0]));
-                
+
                 $content = '';
                 switch ($size['mode'] ?? '') {
                     case 'scale':
@@ -451,4 +451,59 @@ class Offers
         return null;
     }
 
+    /**
+     * La fonction ajoute une nouvelle offre à la base de données avec les informations fournies et enregistre les images de la galerie dans un répertoire correspondant.
+     * 
+     * @param Request request Le paramètre  est une instance de la classe Request, qui est généralement utilisée dans les applications Web pour gérer les requêtes HTTP et accéder aux données de requête telles que les en-têtes, les paramètres de requête et le corps de la requête.
+     * @param string name Le nom de l'offre.
+     * @param string description Le paramètre "description" est une chaîne qui représente la description de l'offre. Il fournit des informations supplémentaires ou des détails sur l'offre.
+     * @param float price Le paramètre "prix" est une valeur flottante représentant le prix de l'offre.
+     * @param string release_date Le paramètre release_date est une chaîne qui représente la date de sortie de l'offre.
+     * @param int mileage Le paramètre "kilométrage" représente le nombre de miles parcourus par un véhicule. Il est de type entier.
+     * @param array gallery Un tableau de fichiers représentant les images à télécharger pour l'offre.
+     * @param array informations Un tableau contenant des informations sur l'offre. Chaque élément du tableau représente une information et peut être de n'importe quel type de données.
+     * @param array equipments_list Un tableau contenant la liste des équipements de l'offre.
+     * 
+     * @return bool une valeur booléenne. Il renvoie vrai si l'insertion dans la base de données est réussie et que le répertoire de la galerie est créé et que tous les fichiers sont téléchargés avec succès. Elle renvoie faux s'il y a une erreur dans la création du répertoire de la galerie ou si l'insertion dans la base de données échoue.
+     */
+    public static function add(Request $request, string $name, string $description, float $price, string $release_date, int $mileage, array $gallery, array $informations, array $equipments_list): bool
+    {
+        $db = $request->getAttribute('db');
+
+        $informations = json_encode($informations);
+        $equipments_list = json_encode($equipments_list);
+
+        $id = Slimex::uniqid_real();
+        $dir = "./data/gallery/$id";
+        while (is_dir($dir)) {
+            $id = Slimex::uniqid_real();
+            $dir = "./data/gallery/$id";
+        }
+
+        $sql = "INSERT INTO offers (active, name, description, price, release_date, mileage, image, informations, equipments_list, dt) VALUES (0, :name, :description, :price, :release_date, :mileage, :image, :informations, :equipments_list, NOW())";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':name' => $name, ':description' => $description, ':price' => $price, ':release_date' => $release_date, ':mileage' => $mileage, ':image' => $id, ':informations' => $informations, ':equipments_list' => $equipments_list]);
+
+        if ($stmt->rowCount() === 1) {
+            if (!mkdir($dir, 0744)) {
+                $sql = "DELETE FROM offers WHERE image = :image";
+                $stmt = $db->prepare($sql);
+                $stmt->execute([':image' => $id]);
+
+                return false;
+            }
+
+            for ($i = 0; $i < count($gallery); $i++) {
+                $file = $gallery[$i];
+                $ext = pathinfo($file, PATHINFO_EXTENSION);
+                $index = $i + 1;
+                $filepath = "$dir/$index.$ext";
+                move_uploaded_file($file, $filepath);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 }

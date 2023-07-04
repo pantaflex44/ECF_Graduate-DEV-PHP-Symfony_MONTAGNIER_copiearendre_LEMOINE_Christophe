@@ -102,6 +102,22 @@ class SlimEx
     }
 
     /**
+     * La fonction vérifie si une date de sortie donnée est dans le passé.
+     * 
+     * @param string release_date Le paramètre release_date est une chaîne représentant une date au format "Y-m-d".
+     * 
+     * @return bool une valeur booléenne. Il renvoie vrai si la date de sortie fournie est dans le passé (avant la date et l'heure actuelles) et faux sinon.
+     */
+    public static function release_date_validator(string $release_date): bool
+    {
+        $tz = timezone_open(date_default_timezone_get());
+        $dt = date_create_from_format('Y-m-d', $release_date, $tz);
+        $now = date_create_immutable("now", $tz);
+
+        return ($dt < $now);
+    }
+
+    /**
      * Cette fonction valide un fichier image téléchargé en vérifiant son extension, sa taille et en le convertissant en un URI de données.
      * 
      * @param UploadedFile uploadedFile Une instance de la classe UploadedFile représentant le fichier image téléchargé.

@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Libs\Offers as Offers;
 use App\Libs\SlimEx as SlimEx;
+use DateTime;
 
 class OffersController
 {
@@ -101,6 +102,90 @@ class OffersController
             return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la demande.",
+                $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
+            );
+        }
+    }
+
+    /**
+     * La fonction ajoute une nouvelle offre à un système, en effectuant diverses validations sur les données d'entrée.
+     * 
+     * @param Request request Le paramètre `` est une instance de la classe `Request`, qui représente une requête HTTP. Il contient des informations sur la requête telles que la méthode HTTP, les en-têtes, les paramètres de requête et le corps de la requête.
+     * @param Response response Le paramètre `` est une instance de la classe `Response`, qui représente la réponse HTTP qui sera renvoyée au client. Il est utilisé pour définir le code d'état et les en-têtes de réponse, ainsi que pour envoyer le corps de la réponse.
+     * 
+     * @return Response un objet Réponse.
+     */
+    public function add(Request $request, Response $response): Response
+    {
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin' && $user?->role !== 'worker') {
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
+
+        try {
+            $data = $request->getParsedBody();
+            $uploadedFiles = $request->getUploadedFiles();
+
+            $name = ucwords(strtolower(\App\Libs\SlimEx::alpha_numeric_only(\App\Libs\SlimEx::strip_accents(trim($data['name'])))));
+            if (!SlimEx::name_validator($name)) {
+                return \App\Libs\SlimEx::send_error(400, "Dénomination incorrecte. Minimum 3 caractères.", ['field' => 'name']);
+            }
+
+            $description = \App\Libs\SlimEx::strip_accents(trim($data['description']));
+            if (!SlimEx::description_validator($description)) {
+                return \App\Libs\SlimEx::send_error(400, "Description incorrecte. Minimum 3 caractères.", ['field' => 'description']);
+            }
+
+            $price = floatval(trim($data['price']));
+            if (!SlimEx::amount_validator($price)) {
+                return \App\Libs\SlimEx::send_error(400, "Montant incorrect.", ['field' => 'price']);
+            }
+
+            $release_date = trim($data['release_date']);
+            if (!SlimEx::release_date_validator($release_date)) {
+                return \App\Libs\SlimEx::send_error(400, "Date de mise en service incorrecte.", ['field' => 'release_date']);
+            }
+
+            $mileage = intval(trim($data['mileage']));
+            if (!$mileage <= 0) {
+                return \App\Libs\SlimEx::send_error(400, "Kilométrage incorrect.", ['field' => 'mileage']);
+            }
+
+            $gallery = [];
+            foreach($uploadedFiles['gallery'] as $file) {
+                $uploadedFile = \App\Libs\SlimEx::image_validator($file);
+                if ($uploadedFile['success'] === true) {
+                    $gallery[] = $file;
+                }
+            }
+            if (count($gallery) === 0) {
+                return \App\Libs\SlimEx::send_error(400, "Au moins une photo valide est obligatoire.", ['field' => 'gallery']);
+            }
+
+            $informations = ['din' => 0, 'fuel' => '', 'type' => '', 'brand' => '', 'color' => '', 'doors' => 0, 'model' => '', 'sites' => 0, 'gearbox' => '', 'fiscal' => 0];
+            foreach(array_keys($informations) as $key) {
+                if (array_key_exists("informations_$key", $data)) {
+                    try {
+                        $value = trim($data["informations_$key"]);
+                        if (gettype($informations[$key]) === 'integer') $value = intval($value);
+                        if (gettype($informations[$key]) === 'double') $value = floatval($value);
+                        if (gettype($informations[$key]) === 'string') $value = ucwords(strtolower(\App\Libs\SlimEx::alpha_numeric_only(\App\Libs\SlimEx::strip_accents($value))));
+                        $informations[$key] = $value;
+                    } catch (\Exception $ex) {}
+                }
+            }
+
+            $equipments_list = array_map(function ($el) { return ucwords(strtolower(\App\Libs\SlimEx::alpha_numeric_only(\App\Libs\SlimEx::strip_accents(trim($el))))); }, $data['equipments_list']);
+
+            if (!Offers::add($request, $name, $description, $price, $release_date, $mileage, $gallery, $informations, $equipments_list)) {
+                return \App\Libs\SlimEx::send_error(400, "Impossible d'enregistrer cette nouvelle annonce.");
+            }
+
+            return $response->withStatus(201);
+        } catch (\Exception $ex) {
+            return \App\Libs\SlimEx::send_error(
+                400,
+                "Impossible de traiter le formulaire d'enregistrement d'une nouvelle annonce'.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
             );
         }
