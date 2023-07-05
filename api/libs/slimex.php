@@ -90,6 +90,19 @@ class SlimEx
     }
 
     /**
+     * La fonction `phone_validator` en PHP vérifie si un numéro de téléphone donné est valide selon un modèle d'expression régulière spécifique.
+     * 
+     * @param string phone Le paramètre phone est une chaîne qui représente un numéro de téléphone.
+     * 
+     * @return bool une valeur booléenne. Elle renvoie true si le numéro de téléphone passé en argument correspond au modèle d'expression régulière spécifié, et false sinon.
+     */
+    public static function phone_validator(string $phone): bool
+    {
+        $regexp = "/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/";
+        return !preg_match($regexp, $phone) ? false : true;
+    }
+
+    /**
      * Cette fonction PHP valide si un montant donné est supérieur ou égal à zéro.
      * 
      * @param float amount Le paramètre « montant » est un type de données flottant représentant une valeur monétaire. La fonction "amount_validator" vérifie si le montant est supérieur ou égal à zéro, ce qui est un contrôle de validation courant pour les valeurs monétaires.

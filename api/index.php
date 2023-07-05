@@ -91,6 +91,11 @@ $routes = [
     ['method' => 'get',     'path' => 'filters_limits',                             'controller' => 'OffersController:filters_limits',      'middlewares' => []],
     ['method' => 'post',    'path' => 'offers[/{page}[/{per_page}]]',               'controller' => 'OffersController:list',                'middlewares' => []],
     ['method' => 'post',    'path' => 'add_offer',                                  'controller' => 'OffersController:add',                 'middlewares' => []],
+    ['method' => 'post',    'path' => 'update_offer/{id:\d+}',                      'controller' => 'OffersController:update',              'middlewares' => []],
+    ['method' => 'delete',  'path' => 'delete_offer/{id:\d+}',                      'controller' => 'OffersController:delete',              'middlewares' => []],
+    ['method' => 'post',    'path' => 'activate_offer/{id:\d+}',                    'controller' => 'OffersController:activate',            'middlewares' => []],
+
+    ['method' => 'post',    'path' => 'contact',                                    'controller' => 'ContactController:send',               'middlewares' => []],
 ];
 foreach ($routes as $route) {
     $r = $app->map(

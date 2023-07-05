@@ -506,4 +506,108 @@ class Offers
 
         return false;
     }
+
+    /**
+     * La fonction met à jour un enregistrement dans la base de données avec les informations fournies et met également à jour les fichiers image associés dans la galerie.
+     * 
+     * @param Request request Le paramètre  est une instance de la classe Request, qui est généralement utilisée pour récupérer des informations sur la requête HTTP en cours. Il est utilisé ici pour accéder à l'objet de connexion à la base de données.
+     * @param int id Le paramètre `id` est un entier qui représente l'ID de l'offre qui doit être mise à jour dans la base de données.
+     * @param string name Le nom de l'offre.
+     * @param string description Le paramètre description est une chaîne qui représente la description mise à jour d'une offre.
+     * @param float price Le paramètre price est de type float et représente le prix de l'offre.
+     * @param string release_date Le paramètre release_date est une chaîne qui représente la date de sortie de l'offre.
+     * @param int mileage Le paramètre « kilométrage » représente le kilométrage d'un véhicule. Il s'agit d'une valeur entière qui indique le nombre de kilomètres parcourus par le véhicule.
+     * @param array gallery Un tableau de fichiers représentant les images de la galerie. Chaque fichier doit être une chaîne représentant le chemin du fichier ou un objet fichier.
+     * @param array informations Un tableau contenant des informations sur l'offre. Chaque élément du tableau représente une information et peut être de n'importe quel type de données.
+     * @param array equipments_list Un tableau contenant la liste des équipements de l'offre. Chaque élément du tableau représente un élément d'équipement unique.
+     * 
+     * @return bool une valeur booléenne. Elle renvoie true si l'opération de mise à jour a réussi et false sinon.
+     */
+    public static function update(Request $request, int $id, string $name, string $description, float $price, string $release_date, int $mileage, array $gallery, array $informations, array $equipments_list): bool
+    {
+        $db = $request->getAttribute('db');
+
+        $informations = json_encode($informations);
+        $equipments_list = json_encode($equipments_list);
+
+        $sql = "SELECT image FROM offers WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $image_id = $stmt->fetchColumn() ?? '';
+        $dir = "./data/gallery/$image_id";
+
+        $sql = "UPDATE offers SET name = :name, description = :description, price = :price, release_date = :release_date, mileage = :mileage, informations = :informations, equipments_list = :equipments_list WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id, ':name' => $name, ':description' => $description, ':price' => $price, ':release_date' => $release_date, ':mileage' => $mileage, ':informations' => $informations, ':equipments_list' => $equipments_list]);
+
+        if ($stmt->rowCount() === 1) {
+            array_map('unlink', array_filter((array) glob("$dir/*")));
+
+            for ($i = 0; $i < count($gallery); $i++) {
+                $file = $gallery[$i];
+                $ext = pathinfo($file, PATHINFO_EXTENSION);
+                $index = $i + 1;
+                $filepath = "$dir/$index.$ext";
+                move_uploaded_file($file, $filepath);
+            }
+
+            return true;
+        }
+
+        return true;
+    }
+
+    /**
+     * La fonction supprime un enregistrement de la table "offres" de la base de données, ainsi que son fichier image et son répertoire associés.
+     * 
+     * @param Request request Le paramètre  est une instance de la classe Request, qui est généralement utilisée pour gérer les requêtes HTTP dans une application Web. Il contient des informations sur la requête en cours, telles que la méthode de requête, les en-têtes et le corps de la requête.
+     * @param int id Le paramètre `id` est un nombre entier qui représente l'ID de l'offre qui doit être supprimée de la base de données.
+     * 
+     * @return bool une valeur booléenne. Il renvoie vrai si la suppression de l'offre avec l'ID donné est réussie, et faux sinon.
+     */
+    public static function delete(Request $request, int $id): bool
+    {
+        $db = $request->getAttribute('db');
+
+        $sql = "SELECT image FROM offers WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $image_id = $stmt->fetchColumn() ?? '';
+        $dir = "./data/gallery/$image_id";
+
+        $sql = "DELETE FROM offers WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+
+        if ($stmt->rowCount() === 1) {
+            array_map('unlink', array_filter((array) glob("$dir/*")));
+            rmdir($dir);
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * La fonction active ou désactive une offre dans la base de données en fonction de l'ID et de l'état fournis.
+     * 
+     * @param Request request Le paramètre  est une instance de la classe Request, qui est généralement utilisée pour gérer les requêtes HTTP dans une application Web. Il contient des informations sur la requête en cours, telles que la méthode de requête, les en-têtes et le corps de la requête.
+     * @param int id Le paramètre "id" est un entier qui représente l'ID de l'offre à activer ou désactiver.
+     * @param int state Le paramètre "state" est un entier qui représente la nouvelle valeur de la colonne "active" dans la table "offers". Si la valeur est 1, cela signifie que l'offre doit être activée. Si la valeur est 0, cela signifie que l'offre doit être désactivée.
+     * 
+     * @return bool une valeur booléenne. Elle renvoie true si la requête de mise à jour a réussi et a affecté une ligne de la base de données, et false sinon.
+     */
+    public static function activate(Request $request, int $id, int $state): bool
+    {
+        $db = $request->getAttribute('db');
+
+        $sql = "UPDATE offers SET active = :active WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id, ':active' => $state]);
+
+        if ($stmt->rowCount() === 1) {
+            return true;
+        }
+        return false;
+    }
 }
