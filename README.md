@@ -105,9 +105,9 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
 
 ### <span style="text-decoration:underline">Installer l'application en local</span>
 
-- **Ce fournir à la source: Github**
+- **Ce fournir à la source: *Github***
 
-- **Installer les dépendances: Composer et NodeJs**
+- **Installer les dépendances: *Composer* et *NodeJs***
 
 - **Configuration de l'application: *les variables d'environement***
 
@@ -159,7 +159,9 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
 
     Revenez dans le fichier `.env` puis modifiez la valeur du paramètre `FIRST_RUN` pour indiquer `false`. Voilà, votre application est désormais opérationnelle!
 
-- **Rien que pour vos yeux: compilation de l'interface graphique**
+- **Rien que pour vos yeux: *compilation de l'interface graphique***
+
+- **Envole toi petit colibri: *déploiement***
     
 - **Essai et Connexion de l'administrateur par défaut**
 
@@ -236,10 +238,16 @@ C'est pourquoi, aucune liaison / relation ne sera représentée sur la modélisa
 
 ![Modélisation des données](models.png)
 
+<br />
+
 
 ## Diagramme de Merise
 
-<span style="color:red">**diagramme Merise**</span>
+<br />
+
+![Méthoe de Merise](merise.png)
+
+<br /><br />
 
 
 ## Diagrammes de séquence

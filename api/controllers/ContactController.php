@@ -70,7 +70,7 @@ class ContactController
             }
 
             $response->getBody()->write(json_encode([
-                'from'      => "$forname $name <$email>",
+                'from'      => $from,
                 'to'        => $to,
                 'subject'   => $subject,
                 'message'   => $message
