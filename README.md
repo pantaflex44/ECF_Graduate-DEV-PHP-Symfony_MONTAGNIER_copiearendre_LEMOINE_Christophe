@@ -105,13 +105,130 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
 
 ### <span style="text-decoration:underline">Installer l'application en local</span>
 
-- **Ce fournir à la source: *Github***
+- **Que la lumière fût: *LAMP* (ou *XAMP* pour Windows)**
+
+    LAMP est un acronyme pour Linux, Apache, MySQL, PHP. C'est une pile logicielle comprenant le système d'exploitation, un serveur HTTP, un système de gestion de bases de données et un langage de programmation interprété, et qui permet de mettre en place un serveur web.
+
+    Pour installer *LAMP* rien de plus simple. Nous allons procéder à l'installation des paquets à jour de votre distribution Linux:
+
+    ```bash
+    $ sudo apt update
+    $ sudo apt install apache2 php libapache2-mod-php mysql-server php-mysql
+    $ sudo apt install php-curl php-gd php-intl php-json php-mbstring php-xml php-zip php-mysql
+    ```
+
+    Petites vérifications rapides:
+
+    ```bash
+    $ php -v
+    $ mysql -v
+    ```
+
+    Et voila ! Un tour sur http://127.0.0.1/ vous emmenera sur la page d'accueil de votre nouveau serveur Web.
+
+    Pour la suite des configurations et personnalisations, je vous propose de vous rendre sur le Didactitiel suivant: https://doc.ubuntu-fr.org/lamp
 
 - **Installer les dépendances: *Composer* et *NodeJs***
 
+    <span style="text-decoration:underline">*Installer Composer*</span>
+
+    Pour rappel toutes les lignes de commandes sont pour linux (pour une autre plateforme, veuillez suivre les instructions sur le site web du concepteur).
+
+    Tout d'abord, direction le dossier utilisateur:
+
+    ```bash
+    $ cd ~
+    ```
+
+    puis, téléchargement de composer:
+
+    ```bash
+    $ curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+    ```
+
+    ensuite, récupération et enregistrement de la signature du paquet récupéré, puis vérification de celui-ci:
+
+    ```bash
+    $ HASH=`curl -sS https://composer.github.io/installer.sig`
+    $ php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installation verifiee'; } else { echo 'Installation corrompue'; unlink('composer-setup.php'); } echo PHP_EOL;"
+    ```
+
+    si tout est OK, la console devrait renvoyer:
+
+    ```bash
+    Installation verifiee
+    ```
+
+    il ne reste plus qu'a installer le paquet ```Composer```:
+
+    ```bash
+    $ sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    ```
+
+    la console indique le suivi de cette installation. Pour vérifier que l'installation s'est déroulée avec succès, tapez la commande suivante:
+
+    ```bash
+    $ composer
+    ```
+
+    la console affiche désormais l'aide de ```Composer``` ! Cette étape est donc un succès. Passons à la suite.
+
+    <span style="text-decoration:underline">*Installer NodeJs*</span>
+
+    Cette fois, je vous conseille fortement de suivre la procédure directement sur le site de ```NodeJs```: https://nodejs.org/en/download/package-manager
+
+    NodeJs peut être compliqué à installer, tout au moins, avoir la dernière version disponible sur son ordinateur. C'est pourquoi, plusieurs méthodes sont directement proposées par le concepteur.
+
+    Néanmoins, quelques vérifications après installation, sont les bienvenues:
+
+    ```bash
+    $ node -v
+    $ npm -v
+    ```
+
+- **Et le projet ? Ce fournir à la source: *Github***
+
+    Désormais il va falloir récupérer le projet de cet ECF pour l'installer sur votre machine.
+
+    Pour ce faire, encore une fois, rien de plus simple.
+
+    1) Téléchargez le ZIP: https://github.com/pantaflex44/ECF_Graduate-DEV-PHP-Symfony_MONTAGNIER_copiearendre_LEMOINE_Christophe/archive/refs/heads/main.zip
+    2) Décompressez le fichier obtenu en lieu de place
+    3) Renommez le dossier obtenu par commodité (totalement optionnel)
+    4) Ouvrez le dossier obtenu
+
+    Vous trouverez dans ce dossier l'intégralité des fichiers du projet. Toutefois, en l'état rien n'est fonctionnel!
+
+    *Commençons par l'API.*
+
+    ```bash
+    $ cd api
+    $ composer install
+    ```
+
+    Ces lignes de commandes lancent l'installation des dépendances liées à l'API ! ```Composer``` éxécute le script intégré au projet pour récupérer toutes les dépendances nécessaires à son fonctionnement.
+
+    ```bash
+    $ cd ..
+    ```
+
+    Pour revenir au dossier parent.
+
+    *Suivons par l'interface graphique*
+
+    ```bash
+    $ cd ui
+    $ npm install
+    ```
+
+    Comme pour ```Composer```, ```Node JS``` installée plus haut, vient télécharger les dépendances nécessaires au fonctionnement de l'interface graphique.    
+
+    Et voila ce sera tout pour la partie *installation du projet en local* ! :-)
+
+
 - **Configuration de l'application: *les variables d'environement***
 
-    A la racine du projet, vous trouverez le fichier `.env`. Ce fichier contient les paramètres fonctionnels de l'application.
+    A la racine du projet, créez un fichier `.env`. Ce fichier contiendra les paramètres fonctionnels de l'application.
 
     Regardons ensemble les paramètres importants pour exécuter convenablement le projet:
 
@@ -123,6 +240,12 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
     # Active le mode debuggage.
     # Par défaut ce paramètre est à FALSE
     DEBUG=false
+
+    # Nom du garage
+    SITENAME=Garage V. Parrot
+
+    # Adresse email du garage
+    EMAIL=admin@garage-vparrot.com
 
     # Informations pour la connexion à la base de données.
     MYSQL_HOST=localhost
@@ -161,7 +284,7 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
 
 - **Rien que pour vos yeux: *compilation de l'interface graphique***
 
-- **Envole toi petit colibri: *déploiement***
+- **Envole toi petit colibri: *déploiement / éxécution***
     
 - **Essai et Connexion de l'administrateur par défaut**
 
@@ -221,7 +344,7 @@ Les **''** entourant les données modifiables sont importantes. **Ne modifier qu
 - HTML 5
 - CSS 3
 - Javascript
-- ReactJs
+- ReactJs (NodeJs 20 / NPM 9)
 
 
 
