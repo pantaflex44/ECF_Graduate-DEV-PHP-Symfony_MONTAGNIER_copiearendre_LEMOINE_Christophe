@@ -225,9 +225,13 @@ Les **''** entourant les données modifiables sont importantes. **Ne modifier qu
 
 
 
-## Diagramme de Cas d'utilisation
+## Diagramme des Cas d'utilisations
 
-<span style="color:red">**diagramme UML**</span>
+<br />
+
+![Modélisation des données](cas_d_utilisations.png)
+
+<br /><br />
 
 
 ## Modélisation des données
