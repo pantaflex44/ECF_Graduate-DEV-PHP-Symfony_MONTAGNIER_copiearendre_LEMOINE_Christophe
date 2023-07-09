@@ -372,7 +372,7 @@ C'est pourquoi, aucune liaison / relation ne sera représentée sur la modélisa
 
 <br />
 
-![Méthoe de Merise](merise.png)
+![Méthode de Merise](merise.png)
 
 <br /><br />
 
@@ -381,26 +381,45 @@ C'est pourquoi, aucune liaison / relation ne sera représentée sur la modélisa
 
 ### <span style="text-decoration:underline">Connexion d'un utilisateur</span>
 
-<span style="color:red">**diagramme de séquence**</span>
+<br />
+
+![Diagramme de séquence: Connexion d'un visiteur](seq_login.png)
+
+<br />
 
 ### <span style="text-decoration:underline">Modification d'un employé</span>
 
-<span style="color:red">**diagramme de séquence**</span>
+<br />
+
+![Diagramme de séquence: Modification d'un visiteur](seq_update_user_data.png)
+
+<br />
 
 ### <span style="text-decoration:underline">Découverte de la liste des véhicules d’occasion</span>
 
-<span style="color:red">**diagramme de séquence**</span>
+<br />
+
+![Diagramme de séquence: Découverte de la liste des véhicules d’occasion](seq_offers_list.png)
+
+<br />
 
 
 ### <span style="text-decoration:underline">Filtrer la liste des véhicules selon ses critères</span>
 
-<span style="color:red">**diagramme de séquence**</span>
+<br />
+
+![Diagramme de séquence: Filtrer la liste des véhicules selon ses critères](seq_offers_filters.png)
+
+<br />
 
 
 ### <span style="text-decoration:underline">Remplir le formulaire pour en savoir plus à propos d’une voiture en particulier</span>
 
-<span style="color:red">**diagramme de séquence**</span>
+<br />
 
+![Diagramme de séquence: Remplir le formulaire pour en savoir plus à propos d’une voiture en particulier](seq_offer_contact.png)
+
+<br />
 
 
 
