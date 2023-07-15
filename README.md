@@ -230,7 +230,7 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
 
     A la racine du projet, créez un fichier `.env`. Ce fichier contiendra les paramètres fonctionnels de l'application.
 
-    Regardons ensemble les paramètres importants pour exécuter convenablement le projet:
+    Regardons ensemble les paramètres pour exécuter convenablement le projet:
 
     ```bash
     # Permet d'initialiser pour la premère fois l'application.
@@ -241,12 +241,6 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
     # Par défaut ce paramètre est à FALSE
     DEBUG=false
 
-    # Nom du garage
-    SITENAME=Garage V. Parrot
-
-    # Adresse email du garage
-    EMAIL=admin@garage-vparrot.com
-
     # Informations pour la connexion à la base de données.
     MYSQL_HOST=localhost
     MYSQL_PORT=3306
@@ -254,12 +248,24 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
     MYSQL_PASS=Mstr08pir.
     MYSQL_BASE=gvp
 
-    # Informations relatives à la sédcurisation de l'accès à l'API
+    # Informations relatives à la sécurisation de l'accès à l'API
     JWT_SECRET=zQA7LS5GY8i8HvKTBqVPVge2PGq9veow
     JWT_ALGO=HS256
     JWT_LIVE=3600
 
-    # ...
+    # Informations relatives au garage
+    SITENAME=Garage V. Parrot
+    SLOGAN=Votre garage automobile sur Toulouse.
+    TITLE=Garage V. Parrot, Toulouse
+    DESCRIPTION=Votre garage automobile sur Toulouse. Le garage Vincent Parrot vous propose l'entretien, la réparation et la vente de véhicules d'occasions.
+    KEYWORDS=automobile,garage,vente,réparation,entretien,toulouse,parrot,voiture,véhicule,occasion
+    LANG=fr-FR
+    PUBLISHER=GVP
+    EMAIL=admin@garage-vparrot.com
+    LATITUDE=43.631774
+    LONGITUDE=1.482446
+    PHONE=+33 5 61 222 222
+    POSTAL_ADDRESS=2 chem. de Gabardie, 31200 TOULOUSE
     ```
 
     Lors du premier lancement de l'application, indiquez `true` comme valeur du paramètre `FIRST_RUN` et `false` comme valeur du paramètre `DEBUG`.
