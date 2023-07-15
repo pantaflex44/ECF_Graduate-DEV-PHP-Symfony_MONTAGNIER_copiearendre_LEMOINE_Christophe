@@ -2,3 +2,6 @@
 tools
 .vscode
 api/vendor
+ui/node_modules
+ui/dist
+ui/.parcel-cache

@@ -30,11 +30,11 @@ class ContactController
 
             $header = "";
 
-            $name = trim($data['name']);
+            $name = strtoupper(trim($data['name']));
             if (strlen($name) === 0) {
                 return \App\Libs\SlimEx::send_error(400, "Nom incorrect.", ['field' => 'name']);
             }
-            $forname = trim($data['forname']);
+            $forname = ucfirst(strtolower(trim($data['forname'])));
             if (strlen($forname) === 0) {
                 return \App\Libs\SlimEx::send_error(400, "Prénom incorrect.", ['field' => 'forname']);
             }
@@ -71,7 +71,7 @@ class ContactController
 
             $response->getBody()->write(json_encode([
                 'from'      => $from,
-                'to'        => $to,
+                /*'to'        => $to,*/
                 'subject'   => $subject,
                 'message'   => $message
             ]));
