@@ -245,7 +245,7 @@ Les commandes sont à titre d'exemple. Elles devront être adaptées au système
     MYSQL_HOST=localhost
     MYSQL_PORT=3306
     MYSQL_USER=user
-    MYSQL_PASS=Mstr08pir.
+    MYSQL_PASS=password
     MYSQL_BASE=gvp
 
     # Informations relatives à la sécurisation de l'accès à l'API
