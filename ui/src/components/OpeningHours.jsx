@@ -5,6 +5,8 @@ import Alert from "./Alert";
 
 export default function OpeningHours() {
     let mounted = false;
+    const now = new Date();
+    const theDay = now.getDay() === 0 ? 7 : now.getDay();
     const [hours, setHours] = useState({ error: null, list: {} })
 
     async function getOpeningHours() {
@@ -57,13 +59,13 @@ export default function OpeningHours() {
                 ? <Alert title="Impossible de récupérer les horaires d'ouverture!" message={error} />
                 : Object.entries(hours.list).map((entry, i) => {
                     const [key, value] = entry;
-                    const isDay = ((new Date()).getDay() - 1 === i ? 'text-danger' : '').trim();
+                    const isDay = (theDay === i + 1 ? 'text-danger fw-bolder' : '').trim();
                     const row = (content) => <div key={`${key}`} className={`row small text-uppercase ${isDay}`}>{content}</div>
-                    const dn = <div key={`${key}_details`} className="col fw-bolder">{key.toUpperCase()}.</div>;
-                    if (value.length === 0) return row(<>{dn}<div key={`${key}_closed`} className="col text-capitalize">Fermé</div></>);
+                    const dn = <div key={`${key}_details`} className="col fw-bolder small">{key.toUpperCase()}.</div>;
+                    if (value.length === 0) return row(<>{dn}<div key={`${key}_closed`} className="col text-capitalize small">Fermé</div></>);
                     else {
                         o = value.map((v, i) => {
-                            return <div key={`${key}_${i}`} className="col text-lowercase">{`${v.open} - ${v.close}`}</div>
+                            return <div key={`${key}_${i}`} className="col text-lowercase small">{`${v.open} - ${v.close}`}</div>
                         });
                         return row(<>{dn}{o}</>);
                     }

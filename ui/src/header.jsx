@@ -1,9 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import LogoFull from "./assets/logo_full.png";
 
 export default function Header() {
+    const routes = [
+        { text: "Accueil", to: "/" },
+        { text: "Prestations", to: "/prestations" },
+    ];
+
     return (
         <>
             <nav className="navbar navbar-expand-md bg-body sticky-top border-bottom border-secondary-subtle">
@@ -16,12 +21,13 @@ export default function Header() {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
-                                <Link className="nav-link active" aria-current="page" to={"/"}>Accueil</Link>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">Link</a>
-                            </li>
+                            {routes.map(r =>
+                                <li className="nav-item">
+                                    <NavLink className={({ isActive, isPending }) =>
+                                        isPending ? "nav-link pending" : isActive ? "nav-link active fw-bolder" : "nav-link"
+                                    } aria-current="page" to={r.to}>{r.text}</NavLink>
+                                </li>
+                            )}
                         </ul>
                     </div>
                     <span className="navbar-text text-uppercase">

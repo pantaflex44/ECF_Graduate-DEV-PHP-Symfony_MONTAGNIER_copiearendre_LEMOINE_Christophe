@@ -6,6 +6,7 @@ import PhoneButton from "../components/PhoneButton";
 import Gvp1 from "../assets/gvp1.jpg";
 import Map1 from "../assets/map1.png";
 import MessageButton from "../components/MessageButton";
+import Services from "../components/Services";
 
 
 export default function Home() {
@@ -21,7 +22,7 @@ export default function Home() {
                 <div className="pt-2"><MessageButton text="Nous contacter" /></div>
             </div>
             <div className="col-12 col-sm-6 col-lg-4 bg-body-tertiary p-4">
-                <p className="fs-5 text-uppercase fw-bolder">Horaires d'ouverture</p>
+                <p className="fs-6 text-uppercase fw-bolder">Horaires d'ouverture</p>
                 <OpeningHours />
             </div>
             <div className="col-12 col-sm-6 col-lg-2 d-none d-lg-block">
@@ -29,6 +30,17 @@ export default function Home() {
             </div>
         </div>
 
+        <div className="row mt-5">
+            <div className="col-12 mt-2 border-bottom border-light-subtle">
+                <p className="h3">Nos prestations</p>
+                <p className="small text-danger">
+                    <small>Nos mécaniciens s’occupent de la réparation et l’entretien de votre voiture, peu importe la marque ou le modèle de celle-ci. Profitez d’une prestation de qualité effectuée par des véritables experts auto. Demandez nous dès maintenant un devis pour la réparation de votre voiture et obtenez un RDV dans les plus brefs délais!</small>
+                </p>
+            </div>
+            <div className="col-12">
+                <Services preview={true} />
+            </div>
+        </div>
 
     </>;
 }

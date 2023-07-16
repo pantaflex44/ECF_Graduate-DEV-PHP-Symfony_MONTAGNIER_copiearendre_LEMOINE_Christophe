@@ -1,10 +1,12 @@
-import React, { createRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 
 import Alert from "./Alert";
 
-export default function MessageButton({ text, subject = "", subjectReadonly = false, message = "" }) {
-    const [form, setForm] = useState({ from: '', forname: '', lastname: '', phone: '', subject, message, submitting: false, submitted: false, errors: null });
+export default function MessageButton({ text, subject = "", subjectReadonly = false, message = "", ...props }) {
+    const [id, setId] = useState('messageModal');
+    const defaultForm = { from: '', forname: '', lastname: '', phone: '', subject, message, submitting: false, submitted: false, errors: null };
+    const [form, setForm] = useState({ ...defaultForm });
     const [sendError, setSendError] = useState('');
 
     function handleChange(name, value) {
@@ -23,7 +25,7 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
 
     function cancel() {
         setSendError('');
-        setForm({ from: '', forname: '', lastname: '', phone: '', subject: '', message: '', submitting: false, submitted: false, errors: null });
+        setForm({ ...defaultForm });
     }
 
     function validateAndSubmit() {
@@ -108,17 +110,19 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
         }
     }, [form.submitting]);
 
+    useEffect(() => setId(`messageModal_${(Math.random() + 1).toString(36).substring(7)}`), []);
+
     return (
         <>
-            <button type="button" className="btn btn-outline-dark btn-sm w-100" data-bs-toggle="modal" data-bs-target="#messageModal">@ {text}</button>
+            <button type="button" className="btn btn-outline-dark btn-sm w-100" data-bs-toggle="modal" data-bs-target={`#${id}`} {...props}>{text}</button>
 
-            <div className="modal fade" id="messageModal" tabIndex="-1" aria-labelledby="messageModalLabel" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
+            <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="messageModalLabel" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <form onSubmit={handleSubmit}>
                             <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="messageModalLabel">✎ {text}</h1>
-                                <button type="button" className="btn-close btn-sm small" data-bs-dismiss="modal" aria-label="Fermer" onClick={() => cancel()}></button>
+                                <h1 className="modal-title fs-5" id="messageModalLabel">{text}</h1>
+                                <button type="button" className="btn-close btn-sm small" data-bs-dismiss="modal" aria-label="Fermer" disabled={form.submitting} onClick={() => cancel()}></button>
                             </div>
                             <div className="modal-body row g-3">
                                 <div className="col-12">
@@ -158,7 +162,7 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
                                     }
                                 </div>
                                 <div className="col-12">
-                                    <label htmlFor="subject" className="form-label col-form-label-sm">Sujet</label>
+                                    <label htmlFor="subject" className={`form-label col-form-label-sm ${subjectReadonly ? 'text-secondary' : ''}`.trim()}>Sujet</label>
                                     <input type="text" disabled={form.submitting || form.submitted} className={`${subjectReadonly ? 'form-control-plaintext' : 'form-control'} form-control-sm focus-ring-danger`.trim()} id="subject" placeholder=" " value={form.subject} onChange={(e) => handleChange('subject', e.target.value)} readOnly={subjectReadonly} />
                                     {form.errors && form.errors.subject &&
                                         <div id="subject-message" className="form-text small text-danger">
