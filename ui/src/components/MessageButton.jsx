@@ -8,6 +8,7 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
     const defaultForm = { from: '', forname: '', lastname: '', phone: '', subject, message, submitting: false, submitted: false, errors: null };
     const [form, setForm] = useState({ ...defaultForm });
     const [sendError, setSendError] = useState('');
+    const [visible, setVisible] = useState(false);
 
     function handleChange(name, value) {
         setForm(old => {
@@ -26,6 +27,7 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
     function cancel() {
         setSendError('');
         setForm({ ...defaultForm });
+        setVisible(false);
     }
 
     function validateAndSubmit() {
@@ -114,72 +116,72 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
 
     return (
         <>
-            <button type="button" className="btn btn-outline-dark btn-sm w-100" data-bs-toggle="modal" data-bs-target={`#${id}`} {...props}>{text}</button>
+            <button type="button" className="btn btn-outline-dark btn-sm w-100" onClick={() => setVisible(true)} {...props}>{text}</button>
 
-            <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="messageModalLabel" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
+            <div className={`modal fade ${visible ? 'show' : 'hide'}`} style={visible ? { display: 'block' } : null}  id={id} tabIndex="-1" aria-labelledby="messageModalLabel" data-bs-backdrop="static" data-bs-keyboard="true" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered text-body fg-body">
                     <div className="modal-content">
                         <form onSubmit={handleSubmit}>
                             <div className="modal-header">
-                                <h1 className="modal-title fs-5" id="messageModalLabel">{text}</h1>
-                                <button type="button" className="btn-close btn-sm small" data-bs-dismiss="modal" aria-label="Fermer" disabled={form.submitting} onClick={() => cancel()}></button>
+                                <h1 className="modal-title fs-5" id={`messageModalLabel-${id}`}>{text}</h1>
+                                <button type="button" className="btn-close btn-sm small" aria-label="Fermer" disabled={form.submitting} onClick={() => cancel()}></button>
                             </div>
                             <div className="modal-body row g-3">
                                 <div className="col-12">
-                                    <label htmlFor="from" className="form-label col-form-label-sm">De</label>
-                                    <input type="email" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id="from" placeholder="adresse@email.com" value={form.from} onChange={(e) => handleChange('from', e.target.value)} />
+                                    <label htmlFor={`from-${id}`} className="form-label col-form-label-sm">De</label>
+                                    <input type="email" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`from-${id}`} placeholder="adresse@email.com" value={form.from} onChange={(e) => handleChange('from', e.target.value)} />
                                     {form.errors && form.errors.from &&
-                                        <div id="subject-message" className="form-text small text-danger">
+                                        <div id={`message-email-error-${id}`} className="form-text small text-danger">
                                             <small>Adresse email absente ou incorrecte!</small>
                                         </div>
                                     }
                                 </div>
                                 <div className="col-md-6">
-                                    <label htmlFor="lastname" className="form-label col-form-label-sm">Nom de famille</label>
-                                    <input type="text" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger text-uppercase" id="lastname" placeholder=" " value={form.lastname} onChange={(e) => handleChange('lastname', e.target.value)} />
+                                    <label htmlFor={`lastname-${id}`} className="form-label col-form-label-sm">Nom de famille</label>
+                                    <input type="text" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger text-uppercase" id={`lastname-${id}`} placeholder=" " value={form.lastname} onChange={(e) => handleChange('lastname', e.target.value)} />
                                     {form.errors && form.errors.lastname &&
-                                        <div id="subject-message" className="form-text small text-danger">
+                                        <div id={`message-lastname-error-${id}`} className="form-text small text-danger">
                                             <small>Nom de famille absent ou incorrect!</small>
                                         </div>
                                     }
                                 </div>
                                 <div className="col-md-6">
-                                    <label htmlFor="forname" className="form-label col-form-label-sm">Prénom</label>
-                                    <input type="text" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger text-capitalize" id="forname" placeholder=" " value={form.forname} onChange={(e) => handleChange('forname', e.target.value)} />
+                                    <label htmlFor={`forname-${id}`} className="form-label col-form-label-sm">Prénom</label>
+                                    <input type="text" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger text-capitalize" id={`forname-${id}`} placeholder=" " value={form.forname} onChange={(e) => handleChange('forname', e.target.value)} />
                                     {form.errors && form.errors.forname &&
-                                        <div id="subject-message" className="form-text small text-danger">
+                                        <div id={`message-forname-error-${id}`} className="form-text small text-danger">
                                             <small>Prénom absent ou incorrect!</small>
                                         </div>
                                     }
                                 </div>
                                 <div className="col-12">
-                                    <label htmlFor="phone" className="form-label col-form-label-sm">Numéro de téléphone</label>
-                                    <input type="tel" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id="phone" placeholder=" " value={form.phone} onChange={(e) => handleChange('phone', e.target.value)} />
+                                    <label htmlFor={`phone-${id}`} className="form-label col-form-label-sm">Numéro de téléphone</label>
+                                    <input type="tel" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`phone-${id}`} placeholder=" " value={form.phone} onChange={(e) => handleChange('phone', e.target.value)} />
                                     {form.errors && form.errors.phone &&
-                                        <div id="subject-message" className="form-text small text-danger">
+                                        <div id={`message-phone-error-${id}`} className="form-text small text-danger">
                                             <small>Numéro de téléphone absent ou incorrect!</small>
                                         </div>
                                     }
                                 </div>
                                 <div className="col-12">
-                                    <label htmlFor="subject" className={`form-label col-form-label-sm ${subjectReadonly ? 'text-secondary' : ''}`.trim()}>Sujet</label>
-                                    <input type="text" disabled={form.submitting || form.submitted} className={`${subjectReadonly ? 'form-control-plaintext' : 'form-control'} form-control-sm focus-ring-danger`.trim()} id="subject" placeholder=" " value={form.subject} onChange={(e) => handleChange('subject', e.target.value)} readOnly={subjectReadonly} />
+                                    <label htmlFor={`subject-${id}`} className={`form-label col-form-label-sm ${subjectReadonly ? 'text-secondary' : ''}`.trim()}>Sujet</label>
+                                    <input type="text" disabled={form.submitting || form.submitted} className={`${subjectReadonly ? 'form-control-plaintext' : 'form-control'} form-control-sm focus-ring-danger`.trim()} id={`subject-${id}`} placeholder=" " value={form.subject} onChange={(e) => handleChange('subject', e.target.value)} readOnly={subjectReadonly} />
                                     {form.errors && form.errors.subject &&
-                                        <div id="subject-message" className="form-text small text-danger">
+                                        <div id={`message-subject-error-1-${id}`} className="form-text small text-danger">
                                             <small>Le sujet doit contenir au moins un mot...</small>
                                         </div>
                                     }
                                     {!subjectReadonly &&
-                                        <div id="subject-message" className="form-text small">
+                                        <div id={`message-subject-error-2-${id}`} className="form-text small">
                                             <small>Le sujet du message doit être le plus explicite possible pour que nous puissions vous répondre efficacement.</small>
                                         </div>
                                     }
                                 </div>
                                 <div className="col-12">
-                                    <label htmlFor="message" className="form-label col-form-label-sm">Message</label>
-                                    <textarea disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id="message" rows="7" placeholder=" " value={form.message} onChange={(e) => handleChange('message', e.target.value)} />
+                                    <label htmlFor={`message-${id}`} className="form-label col-form-label-sm">Message</label>
+                                    <textarea disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`message-${id}`} rows="7" placeholder=" " value={form.message} onChange={(e) => handleChange('message', e.target.value)} />
                                     {form.errors && form.errors.message &&
-                                        <div id="subject-message" className="form-text small text-danger">
+                                        <div id={`message-content-error-${id}`} className="form-text small text-danger">
                                             <small>Le message doit contenir au moins un mot...</small>
                                         </div>
                                     }
@@ -211,6 +213,7 @@ export default function MessageButton({ text, subject = "", subjectReadonly = fa
                     </div>
                 </div>
             </div>
+            {visible && <div className="modal-backdrop fade show"></div>}
         </>
     );
 }

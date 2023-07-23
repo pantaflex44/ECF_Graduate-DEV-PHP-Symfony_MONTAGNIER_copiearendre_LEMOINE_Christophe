@@ -11,7 +11,7 @@ export default function Services({ preview = false }) {
     let loading = false;
 
     const [allServices, setAllServices] = useState({ error: null, list: [] });
-    const [services, setServices] = useState({ list: [], cardWidth: 0 })
+    const [services, setServices] = useState({ list: [], cardWidth: '0px' })
 
     const deviceSize = useDeviceSize();
     let lastDeviceWidth = 0;
@@ -34,16 +34,17 @@ export default function Services({ preview = false }) {
             })
             .catch(ex => {
                 let message = ex.message;
-                switch (ex.request.status) {
+                switch (ex.request?.status) {
                     case 500:
                         message = "Une erreur interne s'est produite!";
                         break;
                 }
-                setAllServices(old => {
+                const code = ex.request?.status ?? 500;
+                setOffers(old => {
                     return {
                         ...old,
-                        error: `(#${ex.request.status}) ${message}`,
-                        list: []
+                        ...defaultState,
+                        error: `(#${code}) ${message}`,
                     }
                 });
             })
@@ -53,7 +54,7 @@ export default function Services({ preview = false }) {
     function arrangeServices() {
         let count = allServices.list.length;
         if (count === 0 || allServices.error !== null) {
-            setServices(old => { return { ...old, list: [], cardWidth: 0 } });
+            setServices(old => { return { ...old, list: [], cardWidth: '0px' } });
             return;
         }
 
@@ -72,7 +73,8 @@ export default function Services({ preview = false }) {
             return {
                 ...old,
                 list,
-                cardWidth: `calc(calc(100% / ${perRow}px) - 1rem)`
+                perRow,
+                cardWidth: `calc(${cardWidth}px - 1rem)`
             }
         });
     }
@@ -95,10 +97,10 @@ export default function Services({ preview = false }) {
             {allServices.error
                 ? <Alert title="Impossible de récupérer la liste des prestations!" message={error} />
                 : <div className="mb-5">
-                    <div className="card-group border border-0 small">
+                    <div className="card-group border border-0 small justify-content-center rounded-0">
                         {services.list.map((entry, i) => {
-                            return <div key={`service_${i}`} className="card border border-0 mx-2 my-4" style={{ width: services.cardWidth, minWidth: services.cardWidth, maxWidth: services.cardWidth }}>
-                                <img src={entry.image} className="card-img-top border object-fit-cover" alt={entry.name} style={{ height: "200px" }} />
+                            return <div key={`service_${i}`} className="card border border-0 mx-2 my-4 rounded-0" style={{ minWidth: `calc(min(${services.cardWidth}, 100%) - 1rem)`, maxWidth: `calc(min(${services.cardWidth}, 100%) - 1rem)` }}>
+                                <img src={entry.image} className="card-img-top border object-fit-cover rounded-0" alt={entry.name} style={{ height: "200px" }} />
                                 <div className="card-body">
                                     <h6 className="card-title fw-bolder">{entry.name}</h6>
                                     <p className="card-text">{entry.description}</p>
@@ -106,7 +108,7 @@ export default function Services({ preview = false }) {
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item text-danger fw-bolder">A partir de {entry.amount}€</li>
                                 </ul>
-                                <div className="card-footer py-3">
+                                <div className="card-footer py-3 rounded-0">
                                     <MessageButton text="Demander un devis" subject={`[${entry.name}] Demande de devis`} subjectReadonly={true} message={`Bonjour,\r\n\r\nJe souhaiterai un devis pour la prestation ${entry.name}.\r\n\r\nMarque du véhicule:\r\nModèle:\r\nKilométrage:\r\nAnnée de mise en circulation:\r\nPlaque d'immatriculation:\r\n\r\nCordialement.`} />
                                 </div>
                             </div>;

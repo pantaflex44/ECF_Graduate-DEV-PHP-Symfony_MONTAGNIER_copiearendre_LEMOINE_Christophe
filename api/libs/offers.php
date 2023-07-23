@@ -11,6 +11,7 @@ class Offers
 
     /* Le code ci-dessus définit un tableau qui contient des informations sur divers filtres pouvant être appliqués à un ensemble de données. Chaque filtre est identifié par une clé (par exemple 'name', 'description', 'doors', etc.) et a une valeur correspondante qui est un tableau avec deux clés : 'filter' et 'args'. */
     public static array $all_filters = [
+        'active'            => ['filter' => 'filter_multi', 'args' => [null, true, null]],
         'name'              => ['filter' => 'filter_multi', 'args' => [null, false, null]],
         'description'       => ['filter' => 'filter_multi', 'args' => [null, false, null]],
         'doors'             => ['filter' => 'filter_multi', 'args' => ['informations', true, null]],
@@ -33,6 +34,7 @@ class Offers
 
     /* Le code ci-dessus définit un tableau appelé `` en PHP. Ce tableau contient divers filtres et leurs fonctions de filtre et arguments correspondants. Chaque filtre est associé à une fonction de filtrage et à un tableau d'arguments. */
     public static array $all_filters_limits = [
+        'active'            => ['limits' => 'filters_limits_multi', 'column' => null],
         'name'              => ['limits' => 'filters_limits_nothing', 'column' => null],
         'description'       => ['limits' => 'filters_limits_nothing', 'column' => null],
 
