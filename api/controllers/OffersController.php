@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Libs\Offers as Offers;
 use App\Libs\SlimEx as SlimEx;
 use DateTime;
+use PhpOption\None;
 
 class OffersController
 {
@@ -29,8 +30,28 @@ class OffersController
             $page = intval($args['page'] ?? '1');
             $per_page = intval($args['per_page'] ?? '20');
 
-            $filters = $request->getParsedBody() ?? [];
-            $offers =  Offers::list($request, !$is_admin_or_worker, $filters, $page, $per_page);
+            $details = $request->getParsedBody() ?? [];
+
+            function combinargs(array $input): array
+            {
+                $output = [];
+                foreach ($input as $d) {
+                    foreach (array_keys($d) as $k) $output[$k] = $d[$k];
+                }
+                return $output;
+            }
+
+            function cleanargs(array $input, string $keyword): array
+            {
+                $output = array_filter($input, fn (string $k): bool => str_starts_with($k, $keyword), ARRAY_FILTER_USE_KEY);;
+                $output = combinargs(array_map(fn (string $k, string $v): array => [substr($k, 7) => $v], array_keys($output), array_values($output)));
+                return $output;
+            }
+
+            $filters = cleanargs($details, 'filter_');
+            $sorters = cleanargs($details, 'sorter_');
+
+            $offers =  Offers::list($request, !$is_admin_or_worker, $filters, $sorters, $page, $per_page);
 
             $response->getBody()->write(json_encode($offers));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -152,7 +173,7 @@ class OffersController
             }
 
             $gallery = [];
-            foreach(($uploadedFiles['gallery'] ?? []) as $file) {
+            foreach (($uploadedFiles['gallery'] ?? []) as $file) {
                 $uploadedFile = \App\Libs\SlimEx::image_validator($file);
                 if ($uploadedFile['success'] === true) {
                     $gallery[] = $file;
@@ -160,7 +181,7 @@ class OffersController
             }
 
             $informations = ['din' => 0, 'fuel' => '', 'type' => '', 'brand' => '', 'color' => '', 'doors' => 0, 'model' => '', 'sites' => 0, 'gearbox' => '', 'fiscal' => 0];
-            foreach(array_keys($informations) as $key) {
+            foreach (array_keys($informations) as $key) {
                 if (array_key_exists("informations_$key", $data)) {
                     try {
                         $value = trim($data["informations_$key"]);
@@ -168,11 +189,14 @@ class OffersController
                         if (gettype($informations[$key]) === 'double') $value = floatval($value);
                         if (gettype($informations[$key]) === 'string') $value = ucwords(strtolower(\App\Libs\SlimEx::alpha_numeric_only(\App\Libs\SlimEx::strip_accents($value))));
                         $informations[$key] = $value;
-                    } catch (\Exception $ex) {}
+                    } catch (\Exception $ex) {
+                    }
                 }
             }
 
-            $equipments_list = array_map(function ($el) { return ucwords(strtolower(\App\Libs\SlimEx::alpha_numeric_only(\App\Libs\SlimEx::strip_accents(trim($el))))); }, $data['equipments_list'] ?? []);
+            $equipments_list = array_map(function ($el) {
+                return ucwords(strtolower(\App\Libs\SlimEx::alpha_numeric_only(\App\Libs\SlimEx::strip_accents(trim($el)))));
+            }, $data['equipments_list'] ?? []);
 
             if (!Offers::add($request, $name, $description, $price, $release_date, $mileage, $gallery, $informations, $equipments_list)) {
                 return \App\Libs\SlimEx::send_error(400, "Impossible d'enregistrer cette nouvelle annonce.");
@@ -197,7 +221,7 @@ class OffersController
      * 
      * @return Response un objet Réponse.
      */
-    public function update(Request $request, Response$response, array $args): Response
+    public function update(Request $request, Response $response, array $args): Response
     {
         $user = $request->getAttribute('user');
         if ($user?->role !== 'admin' && $user?->role !== 'worker') {

@@ -6,6 +6,16 @@
     --bs-pagination-focus-color: rgba(var(--bs-danger-rgb), var(--bs-focus-ring-opacity));
 }
 
+*::selection {
+    color: #fff;
+    background-color: rgba(var(--bs-danger-rgb), 1);
+}
+
+.dropdown-item:active {
+    color: #fff;
+    background-color: rgba(var(--bs-danger-rgb), 1);
+}
+
 body {
     width: 100%;
     min-height: 100vh;
@@ -22,7 +32,7 @@ body {
     border-color: rgba(var(--bs-danger-rgb), 0.4);
     box-shadow: 0 0 0 0.1rem rgba(var(--bs-danger-rgb), var(--bs-focus-ring-opacity));
 }
- 
+
 .top-gray {
     border-top: 1px solid #ddd;
 }
@@ -44,8 +54,58 @@ body {
     margin: 0 auto;
     width: 0;
     height: 0;
-    border-top: 0.75rem solid #dc3545;
+    border-top: 0.75rem solid rgba(var(--bs-danger-rgb), 1);
     border-left: 2rem solid transparent;
     border-right: 2rem solid transparent;
 }
 
+[id$="-box-button"]::after {
+    font-weight: 900;
+    margin-left: 0.5rem;
+}
+
+[id$="-box-button"][aria-expanded="false"]::after {
+    content: '⏷';
+}
+
+[id$="-box-button"][aria-expanded="true"]::after {
+    content: '⏶';
+}
+
+[id$="-box-button"][aria-expanded="true"] {
+    color: var(--bs-btn-hover-color);
+    background-color: var(--bs-btn-hover-bg);
+    border-color: var(--bs-btn-hover-border-color);
+}
+
+.form-check-input:checked {
+    background-color: rgba(var(--bs-danger-rgb), 1);
+    border-color: rgba(var(--bs-danger-rgb), 1);
+}
+
+.form-check-input:checked+label {
+    font-weight: 600;
+}
+
+.form-check-input:focus {
+    border-color: rgba(var(--bs-danger-rgb), 0.4);
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), var(--bs-focus-ring-opacity));
+}
+
+.input-arrow:hover {
+    color: hsl(0, 0%, 60%) !important;
+}
+
+.input-arrow-container[aria-expanded="true"] .input-arrow {
+    color: hsl(0, 0%, 20%) !important;
+}
+
+[class^="filter-text-with-autocomplete"]::placeholder {
+    font-size: smaller;
+}
+
+.filter-text-with-autocomplete-container:focus-within {
+    border-color: rgba(var(--bs-danger-rgb), 0.6) !important;
+    box-shadow: 0 0 0 0.1rem rgba(var(--bs-danger-rgb), var(--bs-focus-ring-opacity)) !important;
+}

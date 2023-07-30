@@ -34,26 +34,26 @@ class Offers
 
     /* Le code ci-dessus définit un tableau appelé `` en PHP. Ce tableau contient divers filtres et leurs fonctions de filtre et arguments correspondants. Chaque filtre est associé à une fonction de filtrage et à un tableau d'arguments. */
     public static array $all_filters_limits = [
-        'active'            => ['limits' => 'filters_limits_multi', 'column' => null],
-        'name'              => ['limits' => 'filters_limits_nothing', 'column' => null],
-        'description'       => ['limits' => 'filters_limits_nothing', 'column' => null],
+        'name'              => ['limits' => 'filters_limits_nothing', 'column' => null, 'label' => "Rechercher dans le titre", 'values_descriptor' => [], 'value' => ''],
+        'description'       => ['limits' => 'filters_limits_nothing', 'column' => null, 'label' => "Dans la description", 'values_descriptor' => [], 'value' => ''],
 
-        'doors'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'color'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'brand'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'type'              => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'fuel'              => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'model'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'sites'             => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
-        'gearbox'           => ['limits' => 'filters_limits_multi', 'column' => 'informations'],
+        'active'            => ['limits' => 'filters_limits_multi', 'column' => null, 'label' => "Etat des annonces", 'values_descriptor' => [0 => 'Désactivées', 1 => 'En ligne'], 'value' => ''],
+        'brand'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Marque", 'values_descriptor' => [], 'value' => ''],
+        'model'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Modèle", 'values_descriptor' => [], 'value' => ''],
+        'type'              => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Carrosserie", 'values_descriptor' => [], 'value' => ''],
+        'fuel'              => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Carburant", 'values_descriptor' => [], 'value' => ''],
+        'gearbox'           => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Boite de vitesse", 'values_descriptor' => [], 'value' => ''],
+        'color'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Couleur", 'values_descriptor' => [], 'value' => ''],
+        'doors'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Nombre de portes", 'values_descriptor' => [], 'value' => ''],
+        'sites'             => ['limits' => 'filters_limits_multi', 'column' => 'informations', 'label' => "Nombre de places", 'values_descriptor' => [], 'value' => ''],
 
-        'din'               => ['limits' => 'filters_limits_range', 'column' => 'informations'],
-        'fiscal'            => ['limits' => 'filters_limits_range', 'column' => 'informations'],
-        'mileage'           => ['limits' => 'filters_limits_range', 'column' => null],
-        'price'             => ['limits' => 'filters_limits_range', 'column' => null],
-        'release_date'      => ['limits' => 'filters_limits_range', 'column' => null],
+        'din'               => ['limits' => 'filters_limits_range', 'column' => 'informations', 'label' => "Puissance", 'values_descriptor' => [], 'value' => ''],
+        'fiscal'            => ['limits' => 'filters_limits_range', 'column' => 'informations', 'label' => "Puissance fiscale", 'values_descriptor' => [], 'value' => ''],
+        'mileage'           => ['limits' => 'filters_limits_range', 'column' => null, 'label' => "Kilométrage", 'values_descriptor' => [], 'value' => ''],
+        'release_date'      => ['limits' => 'filters_limits_range', 'column' => null, 'label' => "Date de mise en service", 'values_descriptor' => [], 'value' => ''],
+        'price'             => ['limits' => 'filters_limits_range', 'column' => null, 'label' => "Prix de vente", 'values_descriptor' => [], 'value' => ''],
 
-        'equipments_list'   => ['limits' => 'filters_limits_array', 'column' => null],
+        'equipments_list'   => ['limits' => 'filters_limits_array', 'column' => null, 'label' => "Equipements", 'values_descriptor' => [], 'value' => ''],
     ];
 
     /**
@@ -101,7 +101,7 @@ class Offers
 
             if (!$exact) $v[$name . $i] = "%" . strtolower($v[$name . $i]) . "%";
         }
-        return ['sql' => count($w) > 0 ? implode(' OR ', $w) : null, 'values' => $v];
+        return ['sql' => count($w) > 0 ? '(' . implode(' OR ', $w) . ')' : null, 'values' => $v];
     }
 
     /**
@@ -123,7 +123,7 @@ class Offers
             $w[] = "JSON_SEARCH(LOWER($name), 'all', :$name$i) IS NOT NULL";
             $v[$name . $i] = "%" . strtolower($val) . "%";
         }
-        return ['sql' => count($w) > 0 ? implode(' OR ', $w) : null, 'values' => $v];
+        return ['sql' => count($w) > 0 ? '(' . implode(' OR ', $w) . ')' : null, 'values' => $v];
     }
 
     /**
@@ -154,7 +154,7 @@ class Offers
             $v[$name . "_min"] = $start;
             $v[$name . "_max"] = $end;
         }
-        return ['sql' => count($w) > 0 ? implode(' OR ', $w) : null, 'values' => $v];
+        return ['sql' => count($w) > 0 ? '(' . implode(' OR ', $w) . ')' : null, 'values' => $v];
     }
 
     /**
@@ -205,17 +205,33 @@ class Offers
      * - 'count' : le nombre total d'éléments
      * - 'data' : un tableau d'offres, chaque offre étant un tableau
      */
-    public static function list(Request $request, bool $active_only, array $filters, int $page = 1, int $per_page = 20): array
+    public static function list(Request $request, bool $active_only, array $filters, array $sorters, int $page = 1, int $per_page = 20): array
     {
         $db = $request->getAttribute('db');
 
         $sql = "SELECT COUNT(*) FROM offers";
         if ($active_only) $sql .= " WHERE active = 1";
         $where = Offers::filters_to_mysql($filters);
+        $active = [];
+        $wfFiltered = [];
         if (count($where['sql']) > 0) {
-            $wf = trim(implode(' OR ', array_filter($where['sql'], function ($v, $k) {
+            $firstFilter = array_filter($where['sql'], function ($v, $k) {
                 return !is_null($v);
-            }, ARRAY_FILTER_USE_BOTH)));
+            }, ARRAY_FILTER_USE_BOTH);
+
+            foreach ($firstFilter as $k => $v) {
+                if (str_starts_with($v, 'active') || str_starts_with($v, '(active')) {
+                    $active[] = $v;
+                } else {
+                    $wfFiltered[] = $v;
+                }
+            }
+
+            $wf = count($wfFiltered) > 0 ? trim(implode(' AND ', $wfFiltered)) : '';
+            if (count($active) > 0) {
+                $wf  = '(' . trim(implode(' OR ', $active)) . ')' . (strlen($wf) > 0 ? ' AND (' . $wf . ')' : '');
+            }
+
             if (strlen($wf) > 0) {
                 if (stripos($sql, "WHERE") !== false) {
                     $sql .= " AND (";
@@ -238,6 +254,23 @@ class Offers
         $total_page = ceil($count / $per_page);
 
         $sql = str_replace("COUNT(*)", "*, DATE_FORMAT(release_date, '%Y-%m') as release_date", $sql);
+
+        $sql .= " ORDER BY ";
+        $s = [];
+        foreach ($sorters as $sorter_type => $sorter_order) {
+            $type = trim($db->quote($sorter_type), "'");
+            $order = strtoupper(trim($sorter_order));
+            if ($order === 'ASC' || $order === 'DESC') {
+                $s[] = $type . " " . $order;
+                if ($type === 'dt') $s[] = "id " . $order;
+            }
+        };
+        if (count($s) === 0) {
+            $sql .= "dt DESC, id DESC";
+        } else {
+            $sql .= join(', ', $s);
+        }
+
         $sql .= " LIMIT " . $per_page . " OFFSET " . $offset;
         $stmt = $db->prepare($sql);
         $stmt->execute($where['values']);
@@ -252,7 +285,7 @@ class Offers
             'data' => []
         ];
         if ($request->getAttribute('debug', false)) {
-            $ret = array_merge($ret, ['query' => ['sql' => $sql, 'values' => $where['values']]]);
+            $ret = array_merge($ret, ['query' => ['sql' => $sql, 'filterValues' => $where['values'], 'filters' => $wfFiltered, 'activeStates' => $active]]);
         }
 
         foreach ($result as $offer) {
@@ -404,7 +437,7 @@ class Offers
             try {
                 $rm = new \ReflectionMethod(__CLASS__, $item['limits']);
                 if (!is_null($rm) && $rm->isStatic()) {
-                    $filters[$name] = call_user_func_array(__CLASS__ . "::" . $item['limits'], [$request, $name, $item['column']]);
+                    $filters[$name] = array_merge(call_user_func_array(__CLASS__ . "::" . $item['limits'], [$request, $name, $item['column']]), ['label' => $item['label'], 'values_descriptor' => $item['values_descriptor'], 'value' => $item['value']]);
                 }
             } catch (Exception $ex) {
             }

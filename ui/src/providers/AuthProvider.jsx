@@ -21,9 +21,9 @@ export default function AuthProvider({ children }) {
             const response = await axios.get(process.env.API_ENDPOINT + '/logout', {
                 headers: { Authorization: `Bearer ${jwt.token}` }
             });
-
-            if (response.status !== 200) throw new Error(response.statusText);
-
+        } catch (ex) {
+            const message = ex.response?.data?.message || ex.message;
+        } finally {
             setRefreshRequired(false);
 
             if (autoLogout !== null) {
@@ -43,14 +43,9 @@ export default function AuthProvider({ children }) {
             setJwt({ token: null, exp });
             setUser(null);
 
-            return true;
-        } catch (ex) {
-            const message = ex.response?.data?.message || ex.message;
-            console.error(message);
-
-            return false;
-        } finally {
             logoutPending = false;
+
+            return true;
         }
     }
 

@@ -151,7 +151,7 @@ export default function LoginLink() {
                         <div className="modal-body row g-3 pb-4">
                             <div className="col-12">
                                 <label htmlFor={`from-${id}`} className="form-label col-form-label-sm">Email</label>
-                                <input type="email" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`email-${id}`} placeholder="adresse@email.com" value={form.email} onChange={(e) => handleChange('email', e.target.value)} />
+                                <input type="email" autoComplete="email" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`email-${id}`} placeholder="adresse@email.com" value={form.email} onChange={(e) => handleChange('email', e.target.value)} />
                                 {form.errors && form.errors.email &&
                                     <div id={`login-email-error-${id}`} className="form-text small text-danger">
                                         <small>Adresse email absente ou incorrecte!</small>
@@ -160,7 +160,7 @@ export default function LoginLink() {
                             </div>
                             <div className="col-12">
                                 <label htmlFor={`password-${id}`} className="form-label col-form-label-sm">Mot de passe</label>
-                                <input type="password" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`password-${id}`} placeholder=" " value={form.password} onChange={(e) => handleChange('password', e.target.value)} />
+                                <input type="password" autoComplete="current-password" disabled={form.submitting || form.submitted} className="form-control form-control-sm focus-ring-danger" id={`password-${id}`} placeholder=" " value={form.password} onChange={(e) => handleChange('password', e.target.value)} />
                             </div>
                             {sendError &&
                                 <div className="col-12">
