@@ -23,6 +23,8 @@ export default function Services({ preview = false }) {
         axios.get(process.env.API_ENDPOINT + '/services')
             .then(response => {
                 if (mounted && response.status === 200) {
+                    if (!Array.isArray(response.data)) throw new Error(response.data);
+                    
                     setAllServices(old => {
                         return {
                             ...old,
@@ -33,6 +35,7 @@ export default function Services({ preview = false }) {
                 }
             })
             .catch(ex => {
+                console.error(ex);
                 let message = ex.message;
                 switch (ex.request?.status) {
                     case 500:
@@ -40,10 +43,9 @@ export default function Services({ preview = false }) {
                         break;
                 }
                 const code = ex.request?.status ?? 500;
-                setOffers(old => {
+                setAllServices(old => {
                     return {
                         ...old,
-                        ...defaultState,
                         error: `(#${code}) ${message}`,
                     }
                 });
@@ -95,7 +97,7 @@ export default function Services({ preview = false }) {
     return (
         <>
             {allServices.error
-                ? <Alert title="Impossible de récupérer la liste des prestations!" message={error} />
+                ? <Alert title="Impossible de récupérer la liste des prestations!" message={allServices.error} />
                 : <div className="mb-5">
                     <div className="card-group border border-0 small justify-content-center rounded-0">
                         {services.list.map((entry, i) => {

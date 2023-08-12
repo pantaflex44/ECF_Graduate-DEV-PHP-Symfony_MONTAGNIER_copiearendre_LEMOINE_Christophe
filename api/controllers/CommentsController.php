@@ -81,9 +81,9 @@ class CommentsController
             }
 
             $comment = trim($data['comment']);
-            if (!SlimEx::description_validator($comment)) {
+            /*if (!SlimEx::description_validator($comment)) {
                 return \App\Libs\SlimEx::send_error(400, "Commentaire manquant.", ['field' => 'comment']);
-            }
+            }*/
 
             $rating = floatval(trim($data['rating']));
             if ($rating > 0) $rating = round($rating * 2) / 2;
@@ -146,6 +146,46 @@ class CommentsController
             return \App\Libs\SlimEx::send_error(
                 400,
                 "Impossible de traiter la suppression de l'avis.",
+                $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
+            );
+        }
+    }
+
+    /**
+     * La fonction "approuver" vérifie le rôle de l'utilisateur et met à jour l'état d'un commentaire en fonction des données fournies.
+     * 
+     * @param Request request Le paramètre `` est une instance de la classe `Request`, qui représente une requête HTTP faite au serveur. Il contient des informations sur la demande, telles que la méthode de la demande, les en-têtes et le corps.
+     * @param Response response Le paramètre `` est une instance de la classe `Response`, qui représente la réponse HTTP qui sera renvoyée au client.
+     * @param array args Le paramètre `` est un tableau qui contient tous les paramètres de route supplémentaires passés à la fonction. Dans ce cas, il semble contenir une clé `'id'`, qui est utilisée pour récupérer l'ID du commentaire.
+     * 
+     * @return Response un objet Réponse.
+     */
+    public function approve(Request $request, Response $response, array $args): Response
+    {
+        $user = $request->getAttribute('user');
+        if ($user?->role !== 'admin' && $user?->role !== 'worker') {
+            return \App\Libs\SlimEx::send_error(403, "Vous n'avez pas les droits pour effectuer cette opération.");
+        }
+
+        try {
+            $data = $request->getParsedBody();
+
+            $id = intval($args['id']);
+
+            $state = intval(trim($data['state']));
+            if ($state !== 1) {
+                $state = 0;
+            }
+
+            if (!Comments::approve($request, $id, $state)) {
+                return \App\Libs\SlimEx::send_error(400, "Impossible de modifier l'état de ce commentaire.");
+            }
+
+            return $response->withStatus(200);
+        } catch (\Exception $ex) {
+            return \App\Libs\SlimEx::send_error(
+                400,
+                "Impossible de traiter le formulaire de modification de l'état de ce commentaire.",
                 $request->getAttribute('debug', false) ? ["debug" => $ex->getMessage()] : []
             );
         }

@@ -51,15 +51,25 @@ export default function Offers({ preview = true }) {
         setLoading(true);
 
         const formData = new FormData();
-        const fs = { ...Object.fromEntries(Object.keys(filters).map((k, i) => [`filter_${k}`, filters[k]])), ...JSON.parse(sorters) };
-        Object.keys(fs).forEach(k => formData.append(k, fs[k]));
-        const data = preview ? undefined : formData;
+        if (!preview) {
+            const fs = { ...Object.fromEntries(Object.keys(filters).map((k, i) => [`filter_${k}`, filters[k]])), ...JSON.parse(sorters) };
+            Object.keys(fs).forEach(k => formData.append(k, fs[k]));
+        }
+        if (auth?.user?.role !== "admin" && auth?.user?.role !== "worker") {
+              if (formData.has('filter_active')) {
+                formData.set('filter_active', '1');
+            } else {
+                formData.append('filter_active', '1');
+            }
+        }
 
         const options = auth.jwt.token ? { headers: { Authorization: `Bearer ${auth.jwt.token}` } } : undefined;
 
-        axios.post(process.env.API_ENDPOINT + '/offers/' + currentPage, data, options)
+        axios.post(process.env.API_ENDPOINT + '/offers/' + currentPage, formData, options)
             .then(response => {
                 if ((mounted || manual) && response?.status === 200) {
+                    if (!Array.isArray(response.data.data)) throw new Error(response.data);
+
                     let list = response.data.data;
                     let page = response.data.page;
                     let perPage = response.data.per_page;
@@ -155,9 +165,9 @@ export default function Offers({ preview = true }) {
             } else {
                 f = { ...f, [k]: data[k] };
             }
-            if (JSON.stringify(filters) !== JSON.stringify(f)) {
+            //if (JSON.stringify(filters) !== JSON.stringify(f)) {
                 setFilters(f);
-            }
+            //}
         })
 
         changing = false;
@@ -180,6 +190,7 @@ export default function Offers({ preview = true }) {
     function hide(data) {
         setShowDetails('');
     }
+
 
     return (
         <>

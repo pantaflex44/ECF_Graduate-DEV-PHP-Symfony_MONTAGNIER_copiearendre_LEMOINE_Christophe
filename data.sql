@@ -79,6 +79,9 @@ CREATE TABLE comments (
   ip VARCHAR(15),
   PRIMARY KEY (id)
 );
+INSERT INTO comments (approved, name, comment, rating, dt, ip) VALUES(1, "Christophe", "Toujours très réactif, équipe à l'écoute et disponible, Je recommande...", 4, NOW(), '127.0.0.1');
+INSERT INTO comments (approved, name, comment, rating, dt, ip) VALUES(1, "Richard", "Service rapide pour la réservation", 3.5, NOW(), '127.0.0.1');
+INSERT INTO comments (approved, name, comment, rating, dt, ip) VALUES(0, "Bob le mousquetaire", "Que de la merde en barre ce garage!\r\nDes incompétents. Je suis venu pour un embrayage et ils m'ont donnés une facture pour le remplacement du moteur complet.\r\nDes voleurs!", 0.5, NOW(), '127.0.0.1');
 
 
 -- Table contenant la liste des annonces de véhicules

@@ -25,15 +25,15 @@ class DbMiddleware
             $cs = sprintf('mysql:host=%s;port=%d;charset=utf8', $_ENV['MYSQL_HOST'], $_ENV['MYSQL_PORT']);
 
             $opts = [
-                PDO::ATTR_ERRMODE               => PDO::ERRMODE_EXCEPTION,
-                PDO::MYSQL_ATTR_FOUND_ROWS      => true,
-                PDO::ATTR_DEFAULT_FETCH_MODE    => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES      => false,
-                PDO::ATTR_STRINGIFY_FETCHES     => false,
+                \PDO::ATTR_ERRMODE               => \PDO::ERRMODE_EXCEPTION,
+                \PDO::MYSQL_ATTR_FOUND_ROWS      => true,
+                \PDO::ATTR_DEFAULT_FETCH_MODE    => \PDO::FETCH_ASSOC,
+                \PDO::ATTR_EMULATE_PREPARES      => false,
+                \PDO::ATTR_STRINGIFY_FETCHES     => false,
             ];
 
             // MySQL server connection
-            $pdo = new PDO($cs, $_ENV['MYSQL_USER'], $_ENV['MYSQL_PASS'], $opts);
+            $pdo = new \PDO($cs, $_ENV['MYSQL_USER'], $_ENV['MYSQL_PASS'], $opts);
 
             // create database if not exists
             $stmt = $pdo->query(sprintf("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';", $_ENV['MYSQL_BASE']));

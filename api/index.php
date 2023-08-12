@@ -86,6 +86,7 @@ $routes = [
     ['method' => 'get',     'path' => 'approved_comments',                          'controller' => 'CommentsController:approved_list',     'middlewares' => []],
     ['method' => 'post',    'path' => 'add_comment',                                'controller' => 'CommentsController:add',               'middlewares' => []],
     ['method' => 'delete',  'path' => 'delete_comment/{id:\d+}',                    'controller' => 'CommentsController:delete',            'middlewares' => []],
+    ['method' => 'post',    'path' => 'approve_comment/{id:\d+}',                   'controller' => 'CommentsController:approve',           'middlewares' => []],
 
     ['method' => 'get',     'path' => 'image/{id}/{file}[/{w:\d+}[/{h:\d+}]]',      'controller' => 'OffersController:get_image',           'middlewares' => []],
     ['method' => 'get',     'path' => 'filters_limits',                             'controller' => 'OffersController:filters_limits',      'middlewares' => []],
@@ -109,7 +110,7 @@ foreach ($routes as $route) {
     }
 }
 
-$app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
+$app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response, $args) {
     throw new HttpNotFoundException($request);
 });
 

@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom';
 import axios from "axios";
 
 export const AuthContext = createContext();
@@ -9,6 +10,8 @@ export default function AuthProvider({ children }) {
     let logoutWatcher = null;
     let logoutPending = false;
     let exp = new Date();
+
+    const location = useLocation();
 
     const [user, setUser] = useState(null);
     const [jwt, setJwt] = useState({ token: null, exp });
@@ -89,7 +92,7 @@ export default function AuthProvider({ children }) {
             if (refreshTimeout === null) refreshTimeout = setTimeout(askForRefresh, logoutDelay * 1000)
             if (logoutWatcher === null) logoutWatcher = setInterval(expireAction, 30000);
 
-            if (window) window.scrollTo(0, 0);
+            if (window && location.pathname !== '/') window.scrollTo(0, 0);
 
             return { error: null };
         } catch (ex) {

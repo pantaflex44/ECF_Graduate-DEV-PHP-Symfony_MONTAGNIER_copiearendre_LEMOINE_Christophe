@@ -9,6 +9,7 @@ require("dotenv").config({ path: '../../.env' });
 import Layout from "./layout";
 import Metas from './metas';
 import AuthProvider from "./providers/AuthProvider";
+
 const Home = React.lazy(() => import('./pages/home'));
 const AllServices = React.lazy(() => import('./pages/services'));
 const AllOffers = React.lazy(() => import('./pages/offers'));

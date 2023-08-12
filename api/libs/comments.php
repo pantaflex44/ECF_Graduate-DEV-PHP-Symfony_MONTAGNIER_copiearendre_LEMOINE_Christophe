@@ -22,7 +22,7 @@ class Comments
     {
         $db = $request->getAttribute('db');
 
-        $sql = "SELECT * FROM comments";
+        $sql = "SELECT * FROM comments ORDER BY dt DESC";
         $stmt = $db->prepare($sql);
         $stmt->execute();
 
@@ -41,7 +41,7 @@ class Comments
     {
         $db = $request->getAttribute('db');
 
-        $sql = "SELECT id, name, comment, rating FROM comments WHERE approved = 1";
+        $sql = "SELECT id, name, comment, rating, dt FROM comments WHERE approved = 1 ORDER BY dt DESC";
         $stmt = $db->prepare($sql);
         $stmt->execute();
 
@@ -112,6 +112,29 @@ class Comments
         $sql = "DELETE FROM comments WHERE id = :id";
         $stmt = $db->prepare($sql);
         $stmt->execute([':id' => $id]);
+
+        if ($stmt->rowCount() === 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * La fonction met à jour le champ "approuvé" d'une offre dans la base de données en fonction de l'ID et de l'état fournis, et renvoie vrai si la mise à jour a réussi.
+     * 
+     * @param Request request Le paramètre  est une instance de la classe Request, qui est généralement utilisée pour gérer les requêtes HTTP dans une application Web. Il contient des informations sur la requête en cours, telles que la méthode de requête, les en-têtes et le corps.
+     * @param int id Le paramètre "id" est un entier qui représente l'ID de l'offre qui doit être approuvée ou mise à jour.
+     * @param int state Le paramètre "state" représente le nouvel état d'approbation que vous souhaitez définir pour l'offre avec l'ID donné. Il doit s'agir d'une valeur entière, où 1 signifie approuvé et 0 signifie non approuvé.
+     * 
+     * @return bool une valeur booléenne. Elle renvoie true si la requête de mise à jour a réussi et a affecté une ligne de la base de données, et false sinon.
+     */
+    public static function approve(Request $request, int $id, int $state): bool
+    {
+        $db = $request->getAttribute('db');
+
+        $sql = "UPDATE comments SET approved = :approved WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id, ':approved' => $state]);
 
         if ($stmt->rowCount() === 1) {
             return true;

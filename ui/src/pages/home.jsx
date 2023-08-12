@@ -21,6 +21,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import MessageButton from "../components/MessageButton";
 import Services from "../components/Services";
 import Offers from "../components/Offers";
+import Comments from "../components/Comments";
 
 
 export default function Home() {
@@ -47,8 +48,7 @@ export default function Home() {
             </div>
         </div>
 
-        <div className="row align-items-stretch justify-content-center mt-5 mb-5 mx-1" style={{gap: "2em", maxWidth: "100%"}}>
-
+        <div className="row align-items-stretch justify-content-center mt-5 mb-5 mx-1" style={{ gap: "2em", maxWidth: "100%" }}>
             {/* ENGAGEMENTS */}
             <div className="col order-1 order-md-0 bg-body-tertiary pt-3" style={{ minWidth: "330px", maxWidth: "100%" }}>
                 <div className="bottom-arrow-gray">
@@ -109,7 +109,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-
         </div>
 
         {/* PRESTATIONS */}
@@ -134,6 +133,19 @@ export default function Home() {
             </div>
             <div className="col-12">
                 <Offers preview={true} />
+            </div>
+        </div>
+
+        {/* COMMENTAIRES */}
+        <div className="row mt-5 mb-0 mb-md-5 border-danger border-top border-5 p-2">
+            <div className="col-12 mt-2">
+                <div className="row justify-content-between text-secondary">
+                    <div className="col-9"><p className="h4 text-uppercase fw-bold">NOS CLIENTS DONNENT LEUR AVIS</p></div>
+                    <div className="col-3 text-end"><p className="h3 text-uppercase fw-bold">🗫</p></div>
+                </div>
+            </div>
+            <div className="col-12">
+                <Comments />
             </div>
         </div>
 

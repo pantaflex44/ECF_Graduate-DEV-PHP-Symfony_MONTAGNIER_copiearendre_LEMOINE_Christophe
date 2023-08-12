@@ -22,6 +22,7 @@ class CorsMiddleware
      */
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
+        header('Access-Control-Allow-Origin: *');
         $response = $handler->handle($request);
         return $response
             ->withHeader('Access-Control-Allow-Origin', '*')

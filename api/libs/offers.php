@@ -101,7 +101,7 @@ class Offers
 
             if (!$exact) $v[$name . $i] = "%" . strtolower($v[$name . $i]) . "%";
         }
-        return ['sql' => count($w) > 0 ? '(' . implode(' OR ', $w) . ')' : null, 'values' => $v];
+        return ['sql' => count($w) > 0 ? implode(' OR ', $w) : null, 'values' => $v];
     }
 
     /**
@@ -123,7 +123,7 @@ class Offers
             $w[] = "JSON_SEARCH(LOWER($name), 'all', :$name$i) IS NOT NULL";
             $v[$name . $i] = "%" . strtolower($val) . "%";
         }
-        return ['sql' => count($w) > 0 ? '(' . implode(' OR ', $w) . ')' : null, 'values' => $v];
+        return ['sql' => count($w) > 0 ? implode(' OR ', $w) : null, 'values' => $v];
     }
 
     /**
@@ -154,7 +154,7 @@ class Offers
             $v[$name . "_min"] = $start;
             $v[$name . "_max"] = $end;
         }
-        return ['sql' => count($w) > 0 ? '(' . implode(' OR ', $w) . ')' : null, 'values' => $v];
+        return ['sql' => count($w) > 0 ? implode(' OR ', $w) : null, 'values' => $v];
     }
 
     /**
@@ -164,7 +164,7 @@ class Offers
      * 
      * @return array Tableau contenant les conditions de requête SQL et leurs valeurs correspondantes, généré à partir du tableau d'entrée des filtres.
      */
-    public static function filters_to_mysql(array $filters): array
+    public static function filters_to_mysql(array$filters): array
     {
         $where = ['sql' => [], 'values' => []];
 
@@ -210,8 +210,7 @@ class Offers
         $db = $request->getAttribute('db');
 
         $sql = "SELECT COUNT(*) FROM offers";
-        if ($active_only) $sql .= " WHERE active = 1";
-        $where = Offers::filters_to_mysql($filters);
+        $where = Offers::filters_to_mysql($filters, $active_only);
         $active = [];
         $wfFiltered = [];
         if (count($where['sql']) > 0) {
@@ -227,9 +226,14 @@ class Offers
                 }
             }
 
+            /*if($active_only) {
+                $active = ['active = :active1'];
+                unset($where['values']['active0']);
+            }*/
+
             $wf = count($wfFiltered) > 0 ? trim(implode(' AND ', $wfFiltered)) : '';
             if (count($active) > 0) {
-                $wf  = '(' . trim(implode(' OR ', $active)) . ')' . (strlen($wf) > 0 ? ' AND (' . $wf . ')' : '');
+                $wf  = '(' . (trim(implode(' OR ', $active))) . ')' . (strlen($wf) > 0 ? ' AND (' . $wf . ')' : '');
             }
 
             if (strlen($wf) > 0) {

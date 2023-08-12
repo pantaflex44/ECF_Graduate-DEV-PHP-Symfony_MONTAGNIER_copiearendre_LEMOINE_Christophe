@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom';
 import { NavLink } from "react-router-dom";
 
 import { AuthContext } from "../providers/AuthProvider";
@@ -7,6 +8,7 @@ import Alert from "./Alert";
 
 export default function LoginLink() {
     const auth = useContext(AuthContext);
+    const location = useLocation();
 
     const defaultForm = { email: '', password: '' };
     const [id, setId] = useState('loginModal');
@@ -106,7 +108,7 @@ export default function LoginLink() {
     function logout() {
         if (auth) {
             setLogoutRequired(!auth.logout());
-            if (window) window.scrollTo(0, 0);
+            if (window && location.pathname !== '/') window.scrollTo(0, 0);
         }
     }
 
